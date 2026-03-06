@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "title": "Positioning Radar — Verkkosivujen positiointianalyysi",
+    "description": "Analysoi verkkosivustosi positiointi suhteessa kilpailijoihin. Katso missä olet ja missä on tilaa erottua."
+  },
+  "hero": {
+    "title": "Katso missä yrityksesi sijaitsee kilpailukentällä",
+    "subtitle": "Syötä oma verkkosivustosi ja kilpailijoidesi sivustot. Saat välittömästi positiointikartan, joka näyttää miten vertaudut ja missä on tilaa erottautua.",
+    "cta": "Analysoi positiointi"
+  },
+  "form": {
+    "yourUrl": "Oma verkkosivuston URL",
+    "yourUrlPlaceholder": "https://omayhtiö.fi",
+    "competitorUrl": "Kilpailijan URL",
+    "competitorPlaceholder": "https://kilpailija.fi",
+    "addCompetitor": "Lisää kilpailija",
+    "removeCompetitor": "Poista",
+    "industry": "Toimiala (valinnainen)",
+    "industryPlaceholder": "esim. SaaS, Konsultointi, Rekrytointi...",
+    "industryHint": "Jätä tyhjäksi niin tekoäly tunnistaa automaattisesti",
+    "analyze": "Analysoi positiointi",
+    "analyzing": "Analysoidaan...",
+    "minCompetitors": "Lisää vähintään 2 kilpailijaa",
+    "maxCompetitors": "Enintään 5 kilpailijaa",
+    "invalidUrl": "Syötä kelvollinen URL"
+  },
+  "loading": {
+    "scraping": "Haetaan verkkosivujen sisältöä...",
+    "scrapingProgress": "Haetaan sivustoa {current}/{total}...",
+    "analyzing": "Tekoäly analysoi positiointia...",
+    "generating": "Luodaan positiointikarttaasi...",
+    "patience": "Tämä kestää noin 30–60 sekuntia"
+  },
+  "results": {
+    "title": "Positiointianalyysi",
+    "map": "Positiointikartta",
+    "insights": "Avainhavainnot",
+    "score": "Erottuvuusindeksi",
+    "scoreDescription": "Kuinka uniikki positiointisi on verrattuna kilpailijoihin",
+    "recommendations": "Suositukset",
+    "industryContext": "Toimialan konteksti",
+    "shareResults": "Jaa tulokset",
+    "newAnalysis": "Uusi analyysi",
+    "fullReport": "Haluatko täyden raportin?",
+    "fullReportDescription": "Saat yksityiskohtaisen viestintäanalyysin, kohderyhmänäkemykset ja konkreettiset suositukset sähköpostiisi.",
+    "getFullReport": "Tilaa täysi raportti"
+  },
+  "footer": {
+    "poweredBy": "Rakentanut",
+    "meom": "MEOM",
+    "tagline": "Tekoälypohjainen positiointianalyysi"
+  }
+}

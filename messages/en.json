@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "title": "Positioning Radar — Website Positioning Analysis",
+    "description": "Analyze your website's positioning against competitors. See where you stand and where there's room to differentiate."
+  },
+  "hero": {
+    "title": "See where you stand in the competitive landscape",
+    "subtitle": "Enter your website and your competitors' websites. Get an instant positioning map showing how you compare and where there's room to differentiate.",
+    "cta": "Analyze positioning"
+  },
+  "form": {
+    "yourUrl": "Your website URL",
+    "yourUrlPlaceholder": "https://yourcompany.com",
+    "competitorUrl": "Competitor URL",
+    "competitorPlaceholder": "https://competitor.com",
+    "addCompetitor": "Add competitor",
+    "removeCompetitor": "Remove",
+    "industry": "Industry (optional)",
+    "industryPlaceholder": "e.g. SaaS, Consulting, Recruitment...",
+    "industryHint": "Leave empty to let AI detect automatically",
+    "analyze": "Analyze positioning",
+    "analyzing": "Analyzing...",
+    "minCompetitors": "Add at least 2 competitors",
+    "maxCompetitors": "Maximum 5 competitors",
+    "invalidUrl": "Please enter a valid URL"
+  },
+  "loading": {
+    "scraping": "Fetching website content...",
+    "scrapingProgress": "Fetching {current} of {total} websites...",
+    "analyzing": "AI is analyzing positioning...",
+    "generating": "Generating your positioning map...",
+    "patience": "This takes about 30–60 seconds"
+  },
+  "results": {
+    "title": "Positioning Analysis",
+    "map": "Positioning Map",
+    "insights": "Key Insights",
+    "score": "Differentiation Score",
+    "scoreDescription": "How unique is your positioning compared to competitors",
+    "recommendations": "Recommendations",
+    "industryContext": "Industry Context",
+    "shareResults": "Share results",
+    "newAnalysis": "New analysis",
+    "fullReport": "Want the full report?",
+    "fullReportDescription": "Get detailed messaging analysis, audience targeting insights, and actionable recommendations delivered to your email.",
+    "getFullReport": "Get full report"
+  },
+  "footer": {
+    "poweredBy": "Built by",
+    "meom": "MEOM",
+    "tagline": "Positioning analysis powered by AI"
+  }
+}
