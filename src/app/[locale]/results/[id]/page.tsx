@@ -7,6 +7,11 @@ import PositioningMap from "@/components/PositioningMap";
 import InsightCards from "@/components/InsightCards";
 import DifferentiationScore from "@/components/DifferentiationScore";
 import ContactCTA from "@/components/ContactCTA";
+import FiveSecondTest from "@/components/FiveSecondTest";
+import PositioningHealthScore from "@/components/PositioningHealthScore";
+import PositioningHealthDetail from "@/components/PositioningHealthDetail";
+import RedFlags from "@/components/RedFlags";
+import EmailGate from "@/components/EmailGate";
 import { PositioningResult } from "@/lib/types";
 import { Link } from "@/i18n/navigation";
 
@@ -17,6 +22,7 @@ export default function ResultsPage() {
   const [result, setResult] = useState<PositioningResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isUnlocked, setIsUnlocked] = useState(false);
 
   useEffect(() => {
     async function fetchResult() {
@@ -94,6 +100,39 @@ export default function ResultsPage() {
           />
         </div>
 
+        {/* 5 Second Test (v2 — FREE) */}
+        {result.companies[0]?.five_second_test && (
+          <div className="rounded-lg border border-zinc-200 bg-white p-6">
+            <FiveSecondTest
+              companies={result.companies}
+              userCompanyUrl={result.user_company_url}
+            />
+          </div>
+        )}
+
+        {/* Health Score + Red Flags side by side (v2 — FREE) */}
+        {result.companies[0]?.five_second_test && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {result.companies[0]?.positioning_health && (
+              <div className="rounded-lg border border-zinc-200 bg-white p-6">
+                <PositioningHealthScore
+                  companies={result.companies}
+                  userCompanyUrl={result.user_company_url}
+                />
+              </div>
+            )}
+            {result.companies[0]?.red_flag_details != null && (
+              <div className="rounded-lg border border-zinc-200 bg-white p-6">
+                <RedFlags
+                  companies={result.companies}
+                  userCompanyUrl={result.user_company_url}
+                />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Insights + Differentiation Score */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="rounded-lg border border-zinc-200 bg-white p-6">
             <InsightCards
@@ -110,6 +149,43 @@ export default function ResultsPage() {
             />
           </div>
         </div>
+
+        {/* Gating: EmailGate OR Gated content */}
+        {result.companies[0]?.five_second_test && !isUnlocked && (
+          <EmailGate
+            analysisId={result.id}
+            onUnlock={() => setIsUnlocked(true)}
+          />
+        )}
+
+        {result.companies[0]?.five_second_test && isUnlocked && (
+          <>
+            {result.companies[0]?.positioning_health && (
+              <div className="rounded-lg border border-zinc-200 bg-white p-6">
+                <PositioningHealthDetail
+                  companies={result.companies}
+                  userCompanyUrl={result.user_company_url}
+                />
+              </div>
+            )}
+
+            {result.recommendations && result.recommendations.length > 0 && (
+              <div className="rounded-lg border border-zinc-200 bg-white p-6">
+                <h3 className="text-lg font-semibold text-zinc-900 mb-1">
+                  {t("results.recommendations")}
+                </h3>
+                <ul className="space-y-2 mt-3">
+                  {result.recommendations.map((rec, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-zinc-700">
+                      <span className="text-red-500 mt-0.5 shrink-0">→</span>
+                      {rec}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </>
+        )}
 
         {/* Contact CTA */}
         <ContactCTA analysisId={result.id} />

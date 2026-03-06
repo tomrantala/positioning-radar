@@ -39,13 +39,12 @@ describe("buildPositioningPrompt", () => {
     expect(result).toContain("Detect the industry automatically");
   });
 
-  it("truncates company content to 4000 characters", () => {
-    const longContent = "A".repeat(5000);
+  it("truncates company content to 5000 characters", () => {
+    const longContent = "A".repeat(6000);
     const companies = [{ url: "https://long.com", content: longContent }];
     const result = buildPositioningPrompt(companies, userUrl);
-    // The content should be sliced to 4000 chars
-    expect(result).not.toContain("A".repeat(5000));
-    expect(result).toContain("A".repeat(4000));
+    expect(result).not.toContain("A".repeat(6000));
+    expect(result).toContain("A".repeat(5000));
   });
 
   it("numbers companies sequentially", () => {
@@ -54,7 +53,7 @@ describe("buildPositioningPrompt", () => {
     expect(result).toContain("### Company 2: https://competitor.com");
   });
 
-  it("includes JSON response structure", () => {
+  it("includes JSON response structure with v1 fields", () => {
     const result = buildPositioningPrompt(baseCompanies, userUrl);
     expect(result).toContain('"industry_context"');
     expect(result).toContain('"axes"');
@@ -62,9 +61,60 @@ describe("buildPositioningPrompt", () => {
     expect(result).toContain('"insights"');
   });
 
-  it("instructs neutral tone", () => {
+  // v2: 5 Second Test
+  it("includes 5 Second Test analysis section", () => {
     const result = buildPositioningPrompt(baseCompanies, userUrl);
-    expect(result).toContain("neutral positioning analyst");
-    expect(result).toContain("neutral, objective analysis");
+    expect(result).toContain("Analysis 2: 5 Second Test");
+    expect(result).toContain('"five_second_test"');
+    expect(result).toContain('"what_visitor_understands"');
+    expect(result).toContain('"what_is_unclear"');
+  });
+
+  // v2: Positioning Health Score (6 elements)
+  it("includes Positioning Health Score analysis section", () => {
+    const result = buildPositioningPrompt(baseCompanies, userUrl);
+    expect(result).toContain("Analysis 3: Positioning Health Score");
+    expect(result).toContain("6 positioning elements");
+    expect(result).toContain("best_customers");
+    expect(result).toContain("competitive_alternatives");
+    expect(result).toContain("unique_attributes");
+    expect(result).toContain("value_creators");
+    expect(result).toContain("category");
+    expect(result).toContain("unique_value_propositions");
+  });
+
+  it("instructs to calculate total_score as arithmetic mean", () => {
+    const result = buildPositioningPrompt(baseCompanies, userUrl);
+    expect(result).toContain("arithmetic mean");
+  });
+
+  // v2: Red Flags
+  it("includes Red Flags analysis section", () => {
+    const result = buildPositioningPrompt(baseCompanies, userUrl);
+    expect(result).toContain("Analysis 4: Red Flags");
+    expect(result).toContain("generic_terminology");
+    expect(result).toContain("self_focused_language");
+    expect(result).toContain("missing_pain_points");
+    expect(result).toContain("buzzword_overload");
+    expect(result).toContain("interchangeable_messaging");
+  });
+
+  it("instructs to only flag problems that actually apply", () => {
+    const result = buildPositioningPrompt(baseCompanies, userUrl);
+    expect(result).toContain("ONLY the problems that actually apply");
+  });
+
+  // v2: Recommendations
+  it("includes recommendations section in JSON schema", () => {
+    const result = buildPositioningPrompt(baseCompanies, userUrl);
+    expect(result).toContain('"recommendations"');
+    expect(result).toContain("actionable");
+  });
+
+  // Tone
+  it("instructs neutral tone for analyses and actionable for recommendations", () => {
+    const result = buildPositioningPrompt(baseCompanies, userUrl);
+    expect(result).toContain("neutral and objective");
+    expect(result).toContain("actionable and specific");
   });
 });

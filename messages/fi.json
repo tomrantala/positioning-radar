@@ -53,7 +53,59 @@
     "shareResults": "Jaa tulokset",
     "newAnalysis": "Uusi analyysi",
     "copyLink": "Kopioi linkki",
-    "linkCopied": "Linkki kopioitu!"
+    "linkCopied": "Linkki kopioitu!",
+    "recommendations": "Suositukset"
+  },
+  "fiveSecondTest": {
+    "title": "5 sekunnin testi",
+    "description": "Ymmärtäisikö ulkopuolinen 5 sekunnissa mitä yritys tekee ja kenelle?",
+    "pass": "LÄPI",
+    "partial": "OSITTAIN",
+    "fail": "EI LÄPI",
+    "understands": "Kävijä ymmärtää",
+    "unclear": "Epäselvää",
+    "you": "Sinä"
+  },
+  "healthScore": {
+    "title": "Positioinnin terveyspistemäärä",
+    "description": "Positioinnin kokonaisvahvuus 6 keskeisen elementin perusteella",
+    "basedOn": "Perustuu 6 positiointielementtiin",
+    "you": "Sinä"
+  },
+  "healthDetail": {
+    "title": "6 elementin positiointierittely",
+    "description": "Yksityiskohtaiset pisteet MEOM:n 6 positiointielementin mukaan",
+    "best_customers": "Parhaat asiakkaat",
+    "competitive_alternatives": "Kilpailevat vaihtoehdot",
+    "unique_attributes": "Uniikit attribuutit",
+    "value_creators": "Arvontuottajat",
+    "category": "Kategoria",
+    "unique_value_propositions": "Uniikit arvolupaukset",
+    "you": "Sinä"
+  },
+  "redFlags": {
+    "title": "Punaisia lippuja",
+    "description": "Verkkosivujen viestinnästä havaitut positiointiongelmat",
+    "generic_terminology": "Geneerinen terminologia",
+    "self_focused_language": "Itsekeskeinen kieli",
+    "missing_pain_points": "Puuttuvat kipupisteet",
+    "buzzword_overload": "Muotisanakuorma",
+    "interchangeable_messaging": "Vaihdettavissa oleva viestintä",
+    "noFlags": "Ei punaisia lippuja",
+    "example": "Esimerkki",
+    "suggestion": "Ehdotus",
+    "you": "Sinä"
+  },
+  "emailGate": {
+    "title": "Avaa koko 6 elementin erittely",
+    "description": "Syötä sähköpostisi nähdäksesi yksityiskohtaiset positiointipisteet ja toimenpidesuositukset.",
+    "includes1": "6 elementin positiointierittely per yritys",
+    "includes2": "Elementtikohtaiset pisteet selityksineen",
+    "includes3": "Toimenpidesuositukset yrityksellesi",
+    "emailPlaceholder": "sinun@sahkoposti.fi",
+    "submit": "Avaa koko analyysi",
+    "sending": "Avataan...",
+    "privacy": "Otamme sinuun yhteyttä ainoastaan positiointianalyysiisi liittyen."
   },
   "cta": {
     "title": "Haluatko syvällisemmän analyysin asiantuntijanäkemyksillä?",

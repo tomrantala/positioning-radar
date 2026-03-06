@@ -53,7 +53,59 @@
     "shareResults": "Share results",
     "newAnalysis": "New analysis",
     "copyLink": "Copy link",
-    "linkCopied": "Link copied!"
+    "linkCopied": "Link copied!",
+    "recommendations": "Recommendations"
+  },
+  "fiveSecondTest": {
+    "title": "5 Second Test",
+    "description": "Would an outsider understand within 5 seconds what each company does and who it's for?",
+    "pass": "PASS",
+    "partial": "PARTIAL",
+    "fail": "FAIL",
+    "understands": "Visitor understands",
+    "unclear": "Unclear",
+    "you": "You"
+  },
+  "healthScore": {
+    "title": "Positioning Health Score",
+    "description": "Overall positioning strength based on 6 key elements",
+    "basedOn": "Based on 6 positioning elements",
+    "you": "You"
+  },
+  "healthDetail": {
+    "title": "6-Element Positioning Breakdown",
+    "description": "Detailed scoring across MEOM's 6 positioning elements",
+    "best_customers": "Best Customers",
+    "competitive_alternatives": "Competitive Alternatives",
+    "unique_attributes": "Unique Attributes",
+    "value_creators": "Value Creators",
+    "category": "Category",
+    "unique_value_propositions": "Unique Value Propositions",
+    "you": "You"
+  },
+  "redFlags": {
+    "title": "Red Flags",
+    "description": "Positioning problems detected from website messaging",
+    "generic_terminology": "Generic Terminology",
+    "self_focused_language": "Self-Focused Language",
+    "missing_pain_points": "Missing Pain Points",
+    "buzzword_overload": "Buzzword Overload",
+    "interchangeable_messaging": "Interchangeable Messaging",
+    "noFlags": "No red flags",
+    "example": "Example",
+    "suggestion": "Suggestion",
+    "you": "You"
+  },
+  "emailGate": {
+    "title": "Unlock the full 6-element breakdown",
+    "description": "Enter your email to see detailed positioning scores and actionable recommendations.",
+    "includes1": "6-element positioning breakdown per company",
+    "includes2": "Element-level scores with explanations",
+    "includes3": "Actionable recommendations for your company",
+    "emailPlaceholder": "your@email.com",
+    "submit": "Unlock full analysis",
+    "sending": "Unlocking...",
+    "privacy": "We'll only contact you about your positioning analysis."
   },
   "cta": {
     "title": "Want a deeper analysis with expert insights?",

@@ -60,6 +60,7 @@ describe("POST /api/analyze", () => {
     },
     companies: [],
     insights: ["insight 1"],
+    recommendations: ["Improve your positioning"],
     user_company_url: "https://example.com",
   };
 
@@ -142,6 +143,21 @@ describe("POST /api/analyze", () => {
         id: "test-id",
         user_url: "https://example.com",
         competitor_urls: validBody.competitor_urls,
+      })
+    );
+  });
+
+  it("includes recommendations in Supabase result JSONB", async () => {
+    mockScrapePages.mockResolvedValueOnce(mockPages);
+    mockAnalyzePositioning.mockResolvedValueOnce(mockResult);
+
+    await POST(makeRequest(validBody));
+
+    expect(mockInsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        result: expect.objectContaining({
+          recommendations: ["Improve your positioning"],
+        }),
       })
     );
   });

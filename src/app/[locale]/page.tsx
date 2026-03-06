@@ -9,6 +9,11 @@ import InsightCards from "@/components/InsightCards";
 import DifferentiationScore from "@/components/DifferentiationScore";
 import LoadingState from "@/components/LoadingState";
 import ContactCTA from "@/components/ContactCTA";
+import FiveSecondTest from "@/components/FiveSecondTest";
+import PositioningHealthScore from "@/components/PositioningHealthScore";
+import PositioningHealthDetail from "@/components/PositioningHealthDetail";
+import RedFlags from "@/components/RedFlags";
+import EmailGate from "@/components/EmailGate";
 import { PositioningResult } from "@/lib/types";
 import { Link } from "@/i18n/navigation";
 
@@ -19,6 +24,7 @@ export default function HomePage() {
   const [result, setResult] = useState<PositioningResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(false);
   const [loadingStage, setLoadingStage] = useState<
     "scraping" | "analyzing" | "generating"
   >("scraping");
@@ -32,6 +38,7 @@ export default function HomePage() {
     setIsLoading(true);
     setError(null);
     setResult(null);
+    setIsUnlocked(false);
     setLoadingStage("scraping");
 
     const stageTimer1 = setTimeout(() => setLoadingStage("analyzing"), 8000);
@@ -70,8 +77,12 @@ export default function HomePage() {
   const handleNewAnalysis = () => {
     setResult(null);
     setError(null);
+    setIsUnlocked(false);
     router.push("/");
   };
+
+  // Check if v2 data is present
+  const hasV2Data = result?.companies?.[0]?.five_second_test != null;
 
   return (
     <div className="min-h-screen bg-zinc-50">
@@ -147,7 +158,39 @@ export default function HomePage() {
               />
             </div>
 
-            {/* Two-column: Insights + Score */}
+            {/* 3. 5 Second Test (v2 — FREE) */}
+            {hasV2Data && (
+              <div className="rounded-lg border border-zinc-200 bg-white p-6">
+                <FiveSecondTest
+                  companies={result.companies}
+                  userCompanyUrl={result.user_company_url}
+                />
+              </div>
+            )}
+
+            {/* 4+5. Health Score + Red Flags side by side (v2 — FREE) */}
+            {hasV2Data && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {result.companies[0]?.positioning_health && (
+                  <div className="rounded-lg border border-zinc-200 bg-white p-6">
+                    <PositioningHealthScore
+                      companies={result.companies}
+                      userCompanyUrl={result.user_company_url}
+                    />
+                  </div>
+                )}
+                {result.companies[0]?.red_flag_details != null && (
+                  <div className="rounded-lg border border-zinc-200 bg-white p-6">
+                    <RedFlags
+                      companies={result.companies}
+                      userCompanyUrl={result.user_company_url}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 6. Insights + Differentiation Score */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="rounded-lg border border-zinc-200 bg-white p-6">
                 <InsightCards
@@ -165,7 +208,46 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Contact CTA — leads to MEOM for deep analysis */}
+            {/* 7. Gating: EmailGate OR Gated content */}
+            {hasV2Data && !isUnlocked && (
+              <EmailGate
+                analysisId={result.id}
+                onUnlock={() => setIsUnlocked(true)}
+              />
+            )}
+
+            {hasV2Data && isUnlocked && (
+              <>
+                {/* Gated: 6-element breakdown */}
+                {result.companies[0]?.positioning_health && (
+                  <div className="rounded-lg border border-zinc-200 bg-white p-6">
+                    <PositioningHealthDetail
+                      companies={result.companies}
+                      userCompanyUrl={result.user_company_url}
+                    />
+                  </div>
+                )}
+
+                {/* Gated: Recommendations */}
+                {result.recommendations && result.recommendations.length > 0 && (
+                  <div className="rounded-lg border border-zinc-200 bg-white p-6">
+                    <h3 className="text-lg font-semibold text-zinc-900 mb-1">
+                      {t("results.recommendations")}
+                    </h3>
+                    <ul className="space-y-2 mt-3">
+                      {result.recommendations.map((rec, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-zinc-700">
+                          <span className="text-red-500 mt-0.5 shrink-0">→</span>
+                          {rec}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* 8. Contact CTA — leads to MEOM for deep analysis */}
             <ContactCTA analysisId={result.id} />
           </div>
         ) : (

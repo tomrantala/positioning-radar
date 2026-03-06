@@ -56,6 +56,7 @@ describe("analyzePositioning", () => {
       },
     ],
     insights: ["Companies cluster in premium segment"],
+    recommendations: ["Focus on the mid-market segment"],
   };
 
   beforeEach(() => {
@@ -80,6 +81,20 @@ describe("analyzePositioning", () => {
     expect(result.axes.x.label).toBe("Price");
     expect(result.companies).toHaveLength(1);
     expect(result.insights).toHaveLength(1);
+    expect(result.recommendations).toEqual(["Focus on the mid-market segment"]);
+
+    vi.useRealTimers();
+  });
+
+  it("defaults recommendations to empty array when missing", async () => {
+    const analysisWithoutRecs = { ...mockAnalysis };
+    delete (analysisWithoutRecs as Record<string, unknown>).recommendations;
+    mockCreate.mockResolvedValueOnce({
+      content: [{ type: "text", text: JSON.stringify(analysisWithoutRecs) }],
+    });
+
+    const result = await analyzePositioning(mockPages, "https://user.com");
+    expect(result.recommendations).toEqual([]);
 
     vi.useRealTimers();
   });
@@ -161,7 +176,7 @@ describe("analyzePositioning", () => {
     expect(mockCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         model: "claude-sonnet-4-20250514",
-        max_tokens: 4096,
+        max_tokens: 8192,
       })
     );
 

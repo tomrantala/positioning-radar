@@ -28,7 +28,7 @@ export async function analyzePositioning(
 
   const message = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
-    max_tokens: 4096,
+    max_tokens: 8192,
     messages: [
       {
         role: "user",
@@ -58,6 +58,7 @@ export async function analyzePositioning(
     axes: analysis.axes,
     companies: analysis.companies,
     insights: analysis.insights,
+    recommendations: analysis.recommendations || [],
     user_company_url: userUrl,
   };
 }
