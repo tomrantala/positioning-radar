@@ -83,9 +83,12 @@ export default function UrlInput({ onSubmit, isLoading }: UrlInputProps) {
         new Set(data.competitors.map((_: unknown, i: number) => i))
       );
       setStep("competitors");
-    } catch {
-      // Fall back to manual mode on error
-      setStep("manual");
+    } catch (err) {
+      // Show error and let user retry or go manual
+      console.error("Competitor discovery failed:", err);
+      setErrors({
+        competitors: t("competitorDiscoveryFailed"),
+      });
     } finally {
       setIsFinding(false);
     }
@@ -202,6 +205,10 @@ export default function UrlInput({ onSubmit, isLoading }: UrlInputProps) {
             t("findCompetitors")
           )}
         </button>
+
+        {errors.competitors && (
+          <p className="text-sm text-red-500 text-center">{errors.competitors}</p>
+        )}
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">

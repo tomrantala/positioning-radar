@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import UrlInput from "@/components/UrlInput";
 import PositioningMap from "@/components/PositioningMap";
 import InsightCards from "@/components/InsightCards";
@@ -14,8 +15,10 @@ import { Link } from "@/i18n/navigation";
 export default function HomePage() {
   const t = useTranslations();
   const locale = useLocale();
+  const router = useRouter();
   const [result, setResult] = useState<PositioningResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [loadingStage, setLoadingStage] = useState<
     "scraping" | "analyzing" | "generating"
   >("scraping");
@@ -53,6 +56,8 @@ export default function HomePage() {
 
       const analysisResult = await response.json();
       setResult(analysisResult);
+      // Update browser URL to the unique results page (without full navigation)
+      window.history.pushState(null, "", `/${locale}/results/${analysisResult.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -65,6 +70,7 @@ export default function HomePage() {
   const handleNewAnalysis = () => {
     setResult(null);
     setError(null);
+    router.push("/");
   };
 
   return (
@@ -72,9 +78,12 @@ export default function HomePage() {
       {/* Header */}
       <header className="border-b border-zinc-200 bg-white">
         <div className="mx-auto max-w-5xl px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-zinc-900">
+          <Link
+            href="/"
+            className="text-xl font-bold text-zinc-900 hover:text-zinc-700 transition-colors"
+          >
             Positioning Radar
-          </h1>
+          </Link>
           <div className="flex items-center gap-3">
             <Link
               href="/"
@@ -96,15 +105,19 @@ export default function HomePage() {
                 {t("results.title")}
               </h2>
               <div className="flex items-center gap-4">
-                <button
-                  onClick={() => {
+                <a
+                  href={`/${locale}/results/${result.id}`}
+                  onClick={(e) => {
+                    e.preventDefault();
                     const url = `${window.location.origin}/${locale}/results/${result.id}`;
                     navigator.clipboard.writeText(url);
+                    setLinkCopied(true);
+                    setTimeout(() => setLinkCopied(false), 2000);
                   }}
-                  className="text-sm text-zinc-500 hover:text-zinc-700"
+                  className="text-sm text-zinc-500 hover:text-zinc-700 underline"
                 >
-                  {t("results.copyLink")}
-                </button>
+                  {linkCopied ? t("results.linkCopied") : t("results.copyLink")}
+                </a>
                 <button
                   onClick={handleNewAnalysis}
                   className="text-sm text-red-600 hover:text-red-700 font-medium"

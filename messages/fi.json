@@ -32,7 +32,8 @@
     "analyzing": "Analysoidaan...",
     "minCompetitors": "Valitse vähintään 2 kilpailijaa",
     "maxCompetitors": "Enintään 5 kilpailijaa",
-    "invalidUrl": "Syötä kelvollinen URL"
+    "invalidUrl": "Syötä kelvollinen URL",
+    "competitorDiscoveryFailed": "Kilpailijoiden automaattinen haku ei onnistunut. Yritä uudelleen tai syötä ne manuaalisesti."
   },
   "loading": {
     "scraping": "Haetaan verkkosivujen sisältöä...",

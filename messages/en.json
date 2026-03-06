@@ -32,7 +32,8 @@
     "analyzing": "Analyzing...",
     "minCompetitors": "Select at least 2 competitors",
     "maxCompetitors": "Maximum 5 competitors",
-    "invalidUrl": "Please enter a valid URL"
+    "invalidUrl": "Please enter a valid URL",
+    "competitorDiscoveryFailed": "Couldn't find competitors automatically. Try again or enter them manually."
   },
   "loading": {
     "scraping": "Fetching website content...",
