@@ -5,13 +5,23 @@
   },
   "hero": {
     "title": "Katso missä yrityksesi sijaitsee kilpailukentällä",
-    "subtitle": "Syötä oma verkkosivustosi ja kilpailijoidesi sivustot. Saat välittömästi positiointikartan, joka näyttää miten vertaudut ja missä on tilaa erottautua.",
+    "subtitle": "Syötä verkkosivustosi URL. Etsimme kilpailijasi ja näytämme positiointikartan välittömästi.",
     "cta": "Analysoi positiointi"
   },
   "form": {
     "yourUrl": "Oma verkkosivuston URL",
     "yourUrlPlaceholder": "https://omayhtiö.fi",
-    "competitorUrl": "Kilpailijan URL",
+    "findCompetitors": "Etsi kilpailijat automaattisesti",
+    "findingCompetitors": "Etsitään kilpailijoita...",
+    "or": "tai",
+    "enterManually": "Tiedän kilpailijani — syötä manuaalisesti",
+    "detected": "Tunnistimme yrityksesi",
+    "detectedIndustry": "Toimiala",
+    "suggestedCompetitors": "Ehdotetut kilpailijat",
+    "selected": "valittu",
+    "analyzeSelected": "Analysoi positiointi",
+    "back": "Takaisin",
+    "competitorUrl": "Kilpailijoiden URL:t",
     "competitorPlaceholder": "https://kilpailija.fi",
     "addCompetitor": "Lisää kilpailija",
     "removeCompetitor": "Poista",
@@ -20,7 +30,7 @@
     "industryHint": "Jätä tyhjäksi niin tekoäly tunnistaa automaattisesti",
     "analyze": "Analysoi positiointi",
     "analyzing": "Analysoidaan...",
-    "minCompetitors": "Lisää vähintään 2 kilpailijaa",
+    "minCompetitors": "Valitse vähintään 2 kilpailijaa",
     "maxCompetitors": "Enintään 5 kilpailijaa",
     "invalidUrl": "Syötä kelvollinen URL"
   },
@@ -36,17 +46,26 @@
     "map": "Positiointikartta",
     "insights": "Avainhavainnot",
     "score": "Erottuvuusindeksi",
-    "scoreDescription": "Kuinka uniikki positiointisi on verrattuna kilpailijoihin",
-    "recommendations": "Suositukset",
+    "scoreDescription": "Kuinka uniikki kunkin yrityksen positiointi on suhteessa muihin",
     "industryContext": "Toimialan konteksti",
     "shareResults": "Jaa tulokset",
     "newAnalysis": "Uusi analyysi",
-    "fullReport": "Haluatko täyden raportin?",
-    "fullReportDescription": "Saat yksityiskohtaisen viestintäanalyysin, kohderyhmänäkemykset ja konkreettiset suositukset sähköpostiisi.",
-    "getFullReport": "Tilaa täysi raportti"
+    "copyLink": "Kopioi linkki",
+    "linkCopied": "Linkki kopioitu!"
+  },
+  "cta": {
+    "title": "Haluatko syvällisemmän analyysin asiantuntijanäkemyksillä?",
+    "description": "Positiointistrategimme käyvät tuloksesi läpi, lisäävät toimialakontekstin ja toimittavat konkreettiset suositukset erottautumiseen.",
+    "namePlaceholder": "Nimesi",
+    "emailPlaceholder": "sinun@sahkoposti.fi",
+    "submit": "Pyydä syväanalyysi",
+    "sending": "Lähetetään...",
+    "thankYou": "Pyyntö vastaanotettu!",
+    "thankYouDescription": "Käymme positiointianalyysisi läpi ja palaamme asiantuntijanäkemyksillämme 2 arkipäivän kuluessa.",
+    "privacy": "Otamme sinuun yhteyttä ainoastaan positiointianalyysiisi liittyen."
   },
   "footer": {
-    "poweredBy": "Rakentanut",
+    "poweredBy": "Positioning Radar by",
     "meom": "MEOM",
     "tagline": "Tekoälypohjainen positiointianalyysi"
   }

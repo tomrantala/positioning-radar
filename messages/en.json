@@ -5,13 +5,23 @@
   },
   "hero": {
     "title": "See where you stand in the competitive landscape",
-    "subtitle": "Enter your website and your competitors' websites. Get an instant positioning map showing how you compare and where there's room to differentiate.",
+    "subtitle": "Enter your website URL. We'll find your competitors and show you an instant positioning map.",
     "cta": "Analyze positioning"
   },
   "form": {
     "yourUrl": "Your website URL",
     "yourUrlPlaceholder": "https://yourcompany.com",
-    "competitorUrl": "Competitor URL",
+    "findCompetitors": "Find competitors automatically",
+    "findingCompetitors": "Finding competitors...",
+    "or": "or",
+    "enterManually": "I know my competitors — enter manually",
+    "detected": "We detected your company",
+    "detectedIndustry": "Industry",
+    "suggestedCompetitors": "Suggested competitors",
+    "selected": "selected",
+    "analyzeSelected": "Analyze positioning",
+    "back": "Back",
+    "competitorUrl": "Competitor URLs",
     "competitorPlaceholder": "https://competitor.com",
     "addCompetitor": "Add competitor",
     "removeCompetitor": "Remove",
@@ -20,7 +30,7 @@
     "industryHint": "Leave empty to let AI detect automatically",
     "analyze": "Analyze positioning",
     "analyzing": "Analyzing...",
-    "minCompetitors": "Add at least 2 competitors",
+    "minCompetitors": "Select at least 2 competitors",
     "maxCompetitors": "Maximum 5 competitors",
     "invalidUrl": "Please enter a valid URL"
   },
@@ -34,20 +44,29 @@
   "results": {
     "title": "Positioning Analysis",
     "map": "Positioning Map",
-    "insights": "Key Insights",
+    "insights": "Key Observations",
     "score": "Differentiation Score",
-    "scoreDescription": "How unique is your positioning compared to competitors",
-    "recommendations": "Recommendations",
+    "scoreDescription": "How unique is each company's positioning relative to others",
     "industryContext": "Industry Context",
     "shareResults": "Share results",
     "newAnalysis": "New analysis",
-    "fullReport": "Want the full report?",
-    "fullReportDescription": "Get detailed messaging analysis, audience targeting insights, and actionable recommendations delivered to your email.",
-    "getFullReport": "Get full report"
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied!"
+  },
+  "cta": {
+    "title": "Want a deeper analysis with expert insights?",
+    "description": "Our positioning strategists will review your results, add industry context, and deliver concrete recommendations for standing out.",
+    "namePlaceholder": "Your name",
+    "emailPlaceholder": "your@email.com",
+    "submit": "Request deep analysis",
+    "sending": "Sending...",
+    "thankYou": "Request received!",
+    "thankYouDescription": "We'll review your positioning analysis and get back to you with our expert insights within 2 business days.",
+    "privacy": "We'll only contact you about your positioning analysis."
   },
   "footer": {
-    "poweredBy": "Built by",
+    "poweredBy": "Positioning Radar by",
     "meom": "MEOM",
-    "tagline": "Positioning analysis powered by AI"
+    "tagline": "AI-powered positioning analysis"
   }
 }

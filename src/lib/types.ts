@@ -22,7 +22,6 @@ export interface PositioningResult {
   axes: { x: PositioningAxis; y: PositioningAxis };
   companies: CompanyAnalysis[];
   insights: string[];
-  recommendations: string[];
   user_company_url: string;
 }
 

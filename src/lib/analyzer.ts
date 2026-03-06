@@ -56,7 +56,6 @@ export async function analyzePositioning(
     axes: analysis.axes,
     companies: analysis.companies,
     insights: analysis.insights,
-    recommendations: analysis.recommendations,
     user_company_url: userUrl,
   };
 }

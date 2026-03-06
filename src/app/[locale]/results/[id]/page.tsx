@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import PositioningMap from "@/components/PositioningMap";
 import InsightCards from "@/components/InsightCards";
 import DifferentiationScore from "@/components/DifferentiationScore";
+import ContactCTA from "@/components/ContactCTA";
 import { PositioningResult } from "@/lib/types";
 import { Link } from "@/i18n/navigation";
 
@@ -110,12 +111,8 @@ export default function ResultsPage() {
           </div>
         </div>
 
-        <div className="rounded-lg border border-zinc-200 bg-white p-6">
-          <InsightCards
-            insights={result.recommendations}
-            title={t("results.recommendations")}
-          />
-        </div>
+        {/* Contact CTA */}
+        <ContactCTA analysisId={result.id} />
       </main>
 
       <footer className="border-t border-zinc-200 bg-white mt-20">

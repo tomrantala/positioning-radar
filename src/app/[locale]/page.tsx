@@ -7,6 +7,7 @@ import PositioningMap from "@/components/PositioningMap";
 import InsightCards from "@/components/InsightCards";
 import DifferentiationScore from "@/components/DifferentiationScore";
 import LoadingState from "@/components/LoadingState";
+import ContactCTA from "@/components/ContactCTA";
 import { PositioningResult } from "@/lib/types";
 import { Link } from "@/i18n/navigation";
 
@@ -30,7 +31,6 @@ export default function HomePage() {
     setResult(null);
     setLoadingStage("scraping");
 
-    // Simulate stage progression
     const stageTimer1 = setTimeout(() => setLoadingStage("analyzing"), 8000);
     const stageTimer2 = setTimeout(() => setLoadingStage("generating"), 20000);
 
@@ -88,7 +88,6 @@ export default function HomePage() {
       </header>
 
       <main className="mx-auto max-w-5xl px-4 py-12">
-        {/* Show results or input form */}
         {result ? (
           <div className="space-y-10">
             {/* Results header */}
@@ -96,12 +95,23 @@ export default function HomePage() {
               <h2 className="text-2xl font-bold text-zinc-900">
                 {t("results.title")}
               </h2>
-              <button
-                onClick={handleNewAnalysis}
-                className="text-sm text-red-600 hover:text-red-700 font-medium"
-              >
-                {t("results.newAnalysis")}
-              </button>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => {
+                    const url = `${window.location.origin}/${locale}/results/${result.id}`;
+                    navigator.clipboard.writeText(url);
+                  }}
+                  className="text-sm text-zinc-500 hover:text-zinc-700"
+                >
+                  {t("results.copyLink")}
+                </button>
+                <button
+                  onClick={handleNewAnalysis}
+                  className="text-sm text-red-600 hover:text-red-700 font-medium"
+                >
+                  {t("results.newAnalysis")}
+                </button>
+              </div>
             </div>
 
             {/* Industry context */}
@@ -142,26 +152,8 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Recommendations */}
-            <div className="rounded-lg border border-zinc-200 bg-white p-6">
-              <InsightCards
-                insights={result.recommendations}
-                title={t("results.recommendations")}
-              />
-            </div>
-
-            {/* Email gate CTA */}
-            <div className="rounded-lg border-2 border-red-200 bg-red-50 p-8 text-center">
-              <h3 className="text-xl font-bold text-zinc-900 mb-2">
-                {t("results.fullReport")}
-              </h3>
-              <p className="text-zinc-600 mb-6 max-w-md mx-auto">
-                {t("results.fullReportDescription")}
-              </p>
-              <button className="rounded-lg bg-red-600 px-8 py-3 text-white font-medium hover:bg-red-700 transition-colors">
-                {t("results.getFullReport")}
-              </button>
-            </div>
+            {/* Contact CTA — leads to MEOM for deep analysis */}
+            <ContactCTA analysisId={result.id} />
           </div>
         ) : (
           <div className="max-w-2xl mx-auto">

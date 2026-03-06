@@ -50,7 +50,6 @@ export async function POST(request: NextRequest) {
         axes: result.axes,
         companies: result.companies,
         insights: result.insights,
-        recommendations: result.recommendations,
       },
     });
 
