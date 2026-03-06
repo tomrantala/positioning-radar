@@ -51,7 +51,10 @@ export default function UrlInput({ onSubmit, isLoading }: UrlInputProps) {
     new Set()
   );
 
-  // Manual competitor URLs
+  // Manual competitor URLs added in the suggestions step
+  const [extraUrls, setExtraUrls] = useState<string[]>([]);
+
+  // Manual competitor URLs (fully manual mode)
   const [manualUrls, setManualUrls] = useState(["", ""]);
 
   const [isFinding, setIsFinding] = useState(false);
@@ -105,20 +108,65 @@ export default function UrlInput({ onSubmit, isLoading }: UrlInputProps) {
     setSelectedSuggestions(updated);
   };
 
-  // Submit with selected suggestions
+  // Remove a suggestion entirely
+  const removeSuggestion = (index: number) => {
+    setSuggestions((prev) => prev.filter((_, i) => i !== index));
+    setSelectedSuggestions((prev) => {
+      const updated = new Set<number>();
+      prev.forEach((i) => {
+        if (i < index) updated.add(i);
+        else if (i > index) updated.add(i - 1);
+        // skip the removed index
+      });
+      return updated;
+    });
+  };
+
+  // Extra manual URLs in suggestions step
+  const totalCompetitors =
+    selectedSuggestions.size + extraUrls.filter((u) => u.trim()).length;
+
+  const addExtraUrl = () => {
+    if (totalCompetitors < 5) setExtraUrls([...extraUrls, ""]);
+  };
+  const removeExtraUrl = (i: number) => {
+    setExtraUrls(extraUrls.filter((_, j) => j !== i));
+  };
+  const updateExtraUrl = (i: number, val: string) => {
+    const updated = [...extraUrls];
+    updated[i] = val;
+    setExtraUrls(updated);
+  };
+
+  // Submit with selected suggestions + extra manual URLs
   const handleSubmitSuggestions = () => {
+    const newErrors: Record<string, string> = {};
     const selectedUrls = suggestions
       .filter((_, i) => selectedSuggestions.has(i))
       .map((s) => s.url);
 
-    if (selectedUrls.length < 2) {
-      setErrors({ competitors: t("minCompetitors") });
+    const filledExtras = extraUrls.filter((u) => u.trim());
+    filledExtras.forEach((url, i) => {
+      if (!isValidUrl(url)) newErrors[`extra_${i}`] = t("invalidUrl");
+    });
+
+    const allUrls = [...selectedUrls, ...filledExtras.map(normalizeUrl)];
+
+    if (allUrls.length < 2) {
+      newErrors.competitors = t("minCompetitors");
+    }
+    if (allUrls.length > 5) {
+      newErrors.competitors = t("maxCompetitors");
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
     onSubmit({
       userUrl: normalizeUrl(userUrl),
-      competitorUrls: selectedUrls,
+      competitorUrls: allUrls,
       industry: detectedIndustry,
     });
   };
@@ -231,8 +279,6 @@ export default function UrlInput({ onSubmit, isLoading }: UrlInputProps) {
 
   // ─── Step 2: Competitor suggestions ───
   if (step === "competitors") {
-    const selectedCount = selectedSuggestions.size;
-
     return (
       <div className="space-y-6">
         {/* Company detection */}
@@ -247,47 +293,55 @@ export default function UrlInput({ onSubmit, isLoading }: UrlInputProps) {
         {/* Competitor list */}
         <div>
           <label className="block text-sm font-medium text-zinc-700 mb-3">
-            {t("suggestedCompetitors")} ({selectedCount} {t("selected")})
+            {t("competitors")} ({totalCompetitors}/5)
           </label>
           <div className="space-y-2">
             {suggestions.map((comp, i) => {
               const isSelected = selectedSuggestions.has(i);
               return (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => toggleSuggestion(i)}
-                  className={`w-full text-left rounded-lg border p-3 transition-colors ${
+                <div
+                  key={`suggestion-${i}`}
+                  className={`rounded-lg border p-3 transition-colors ${
                     isSelected
                       ? "border-red-300 bg-red-50"
-                      : "border-zinc-200 bg-white hover:border-zinc-300"
+                      : "border-zinc-200 bg-white"
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    <div
-                      className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
-                        isSelected
-                          ? "border-red-500 bg-red-500"
-                          : "border-zinc-300"
-                      }`}
+                    <button
+                      type="button"
+                      onClick={() => toggleSuggestion(i)}
+                      className="flex-shrink-0 mt-0.5"
                     >
-                      {isSelected && (
-                        <svg
-                          className="w-3 h-3 text-white"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={3}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                      )}
-                    </div>
-                    <div className="min-w-0">
+                      <div
+                        className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                          isSelected
+                            ? "border-red-500 bg-red-500"
+                            : "border-zinc-300 hover:border-zinc-400"
+                        }`}
+                      >
+                        {isSelected && (
+                          <svg
+                            className="w-3 h-3 text-white"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={3}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        )}
+                      </div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => toggleSuggestion(i)}
+                      className="min-w-0 flex-1 text-left"
+                    >
                       <p className="font-medium text-zinc-900">{comp.name}</p>
                       <p className="text-xs text-zinc-400 truncate">
                         {comp.url}
@@ -295,14 +349,72 @@ export default function UrlInput({ onSubmit, isLoading }: UrlInputProps) {
                       <p className="text-sm text-zinc-500 mt-1">
                         {comp.description}
                       </p>
-                    </div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeSuggestion(i)}
+                      className="flex-shrink-0 p-1 text-zinc-300 hover:text-red-500 transition-colors"
+                      title={t("removeCompetitor")}
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
                   </div>
-                </button>
+                </div>
               );
             })}
+
+            {/* Manual additions */}
+            {extraUrls.map((url, i) => (
+              <div key={`extra-${i}`} className="flex gap-2">
+                <input
+                  type="text"
+                  value={url}
+                  onChange={(e) => updateExtraUrl(i, e.target.value)}
+                  placeholder={t("competitorPlaceholder")}
+                  className="flex-1 rounded-lg border border-zinc-300 px-4 py-3 text-zinc-900 placeholder:text-zinc-400 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeExtraUrl(i)}
+                  className="px-3 py-2 text-sm text-zinc-400 hover:text-red-500 transition-colors"
+                >
+                  {t("removeCompetitor")}
+                </button>
+              </div>
+            ))}
+            {Object.entries(errors)
+              .filter(([key]) => key.startsWith("extra_"))
+              .map(([key, msg]) => (
+                <p key={key} className="text-sm text-red-500">{msg}</p>
+              ))}
+            {errors.competitors && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.competitors}
+              </p>
+            )}
           </div>
-          {errors.competitors && (
-            <p className="mt-2 text-sm text-red-500">{errors.competitors}</p>
+
+          {/* Add competitor button */}
+          {totalCompetitors < 5 && (
+            <button
+              type="button"
+              onClick={addExtraUrl}
+              className="mt-3 text-sm text-red-600 hover:text-red-700 font-medium"
+            >
+              + {t("addCompetitor")}
+            </button>
           )}
         </div>
 
@@ -316,7 +428,7 @@ export default function UrlInput({ onSubmit, isLoading }: UrlInputProps) {
           </button>
           <button
             onClick={handleSubmitSuggestions}
-            disabled={isLoading || selectedCount < 2}
+            disabled={isLoading || totalCompetitors < 2}
             className="flex-[2] rounded-lg bg-red-600 px-6 py-3 text-white font-medium hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? t("analyzing") : t("analyzeSelected")}
