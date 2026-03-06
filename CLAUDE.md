@@ -38,5 +38,22 @@ See `.env.local.example` for required keys.
 - Messages in `messages/en.json` and `messages/fi.json`
 - Locale routing via `[locale]` segment
 
+## Testing
+- Framework: Vitest + @testing-library/react
+- Run: `npx vitest run`
+- 76 unit tests across 10 test files (lib, API routes, components)
+
+### Post-commit rule
+**After every commit, open the deployed site in real Chrome (via MCP) and verify:**
+1. Home page loads, logo is clickable
+2. Form accepts a URL and auto-discovers competitors (or shows error gracefully)
+3. Analysis completes and results render with the positioning map
+4. Browser URL updates to the unique result path (`/{locale}/results/{id}`)
+5. "Copy link" works and is a real link
+6. Language switcher (EN/FI) works
+7. Results page loads when opened directly via its unique URL
+
+Use the Chrome MCP tools (`tabs_context_mcp`, `navigate`, `read_page`, `computer`, etc.) to perform these checks in a real browser.
+
 ## Plan document
 Full project plan: MEOM Cowork → markkinointi/lead-magnet-positiointi/plan.md

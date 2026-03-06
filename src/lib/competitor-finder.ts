@@ -13,7 +13,9 @@ export interface CompetitorFinderResult {
   competitors: CompetitorSuggestion[];
 }
 
-const anthropic = new Anthropic();
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY?.trim(),
+});
 
 export async function findCompetitors(
   userUrl: string,
@@ -61,7 +63,7 @@ Respond in JSON only:
   const identified = JSON.parse(identifyJson);
 
   // Step 3: Search for competitors using Tavily
-  const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY! });
+  const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY?.trim() || "" });
 
   const searchResult = await tvly.search(identified.search_query, {
     maxResults: 10,

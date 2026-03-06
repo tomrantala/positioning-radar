@@ -3,7 +3,7 @@ import { ScrapedPage } from "./types";
 const FIRECRAWL_API_URL = "https://api.firecrawl.dev/v1/scrape";
 
 export async function scrapePage(url: string): Promise<ScrapedPage> {
-  const apiKey = process.env.FIRECRAWL_API_KEY;
+  const apiKey = process.env.FIRECRAWL_API_KEY?.trim();
 
   if (!apiKey) {
     throw new Error("FIRECRAWL_API_KEY is not set");

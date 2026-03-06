@@ -3,7 +3,9 @@ import { buildPositioningPrompt } from "@/prompts/positioning-analysis";
 import { PositioningResult, ScrapedPage } from "./types";
 import { nanoid } from "nanoid";
 
-const anthropic = new Anthropic();
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY?.trim(),
+});
 
 export async function analyzePositioning(
   pages: ScrapedPage[],
