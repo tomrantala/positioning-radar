@@ -17,22 +17,34 @@
 - ✅ Lazy Anthropic client initialization (avoids module-level env access)
 - ✅ Debug logging cleaned up (kept concise operational logs)
 
+### Admin Dashboard
+- ✅ Admin dashboard at `/admin` with token auth (ADMIN_SECRET)
+- ✅ Stats overview: total analyses, leads, weekly/monthly counts, industry breakdown
+- ✅ Analyses table: URL, industry, locale, competitor count, date — filterable, paginated
+- ✅ Leads table: email, source, analysis link, date — paginated
+- ✅ CSV export for both analyses and leads
+- ✅ HubSpot sync placeholder (Coming Soon button)
+
 ## 📋 TODO
 
-### Lead Mining & Analytics
-- [ ] Admin dashboard — query `analyses` table for insights
-  - Total analyses by industry
-  - Trending industries
-  - Companies by locale/date
-- [ ] Lead export — CSV/JSON from `analyses` table for CRM
-- [ ] Privacy compliance: notice on homepage, opt-out, GDPR check
+### HubSpot Integration
+- [ ] Add `HUBSPOT_API_KEY` env var
+- [ ] Map lead fields to HubSpot contact properties (email, source, analysis URL)
+- [ ] Custom HubSpot property: `positioning_radar_analysis_url`
+- [ ] Batch sync endpoint: `/api/admin/hubspot-sync`
+- [ ] Wire up "Sync to HubSpot" button in admin dashboard
+
+### Privacy & Compliance
+- [ ] Privacy notice on homepage
+- [ ] Opt-out option for analytics tracking
+- [ ] GDPR compliance check
 
 ### Polish & Production
 - [ ] PDF report generation from `result` JSONB
 - [ ] Rate limiting (API quota per IP)
 - [ ] Performance: cache Tavily/Claude responses
 - [ ] Mobile responsive polish
-- [ ] Add POSITIONING_RADAR_ANTHROPIC_KEY to Vercel production env
+- [ ] Add `ADMIN_SECRET` to Vercel production env
 
 ## 🔗 Key Files
 - `src/lib/competitor-finder.ts` — Competitor discovery (scrape → Claude → Tavily → Claude)
@@ -41,6 +53,10 @@
 - `src/lib/types.ts` — All type definitions
 - `src/components/` — UI components (map, 5-second test, health score, red flags, email gate)
 - `src/app/[locale]/results/[id]/page.tsx` — Results page with gating
+- `src/app/admin/page.tsx` — Admin dashboard
+- `src/app/api/admin/` — Admin API routes (stats, analyses, leads)
+- `src/lib/admin-auth.ts` — Admin token validation
+- `src/lib/csv.ts` — CSV export utilities
 - `supabase/migrations/20260306000000_initial.sql` — DB schema (analyses + leads)
 
 ## 📊 Database
