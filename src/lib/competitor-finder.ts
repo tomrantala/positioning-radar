@@ -1,5 +1,6 @@
 import { tavily } from "@tavily/core";
 import Anthropic from "@anthropic-ai/sdk";
+import { competitorCache } from "./cache";
 
 export interface CompetitorSuggestion {
   name: string;
@@ -25,6 +26,14 @@ export async function findCompetitors(
   userUrl: string,
   locale: string = "en"
 ): Promise<CompetitorFinderResult> {
+  // Check cache first (key by URL + locale)
+  const cacheKey = `${userUrl}::${locale}`;
+  const cached = competitorCache.get(cacheKey) as CompetitorFinderResult | undefined;
+  if (cached) {
+    console.log("[COMPETITOR_FINDER] Cache hit:", userUrl);
+    return cached;
+  }
+
   console.log("[COMPETITOR_FINDER] Starting for:", userUrl);
 
   // Step 1: Scrape the user's homepage to understand what they do
@@ -148,9 +157,14 @@ Respond in ${lang}. Return JSON only:
 
   console.log("[CLAUDE_FILTER]", filtered.competitors.slice(0, 5).map((c: CompetitorSuggestion) => c.name).join(", "));
 
-  return {
+  const result: CompetitorFinderResult = {
     detected_industry: identified.industry,
     company_name: identified.company_name,
     competitors: filtered.competitors.slice(0, 5),
   };
+
+  // Cache the result
+  competitorCache.set(cacheKey, result);
+
+  return result;
 }

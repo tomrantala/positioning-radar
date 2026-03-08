@@ -1,4 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+
+vi.mock("@/lib/cache", () => ({
+  scrapeCache: { get: () => undefined, set: () => {} },
+  competitorCache: { get: () => undefined, set: () => {} },
+}));
+
 import { scrapePage, scrapePages } from "@/lib/scraper";
 
 // Mock global fetch

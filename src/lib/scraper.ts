@@ -1,4 +1,5 @@
 import { ScrapedPage } from "./types";
+import { scrapeCache } from "./cache";
 
 const FIRECRAWL_API_URL = "https://api.firecrawl.dev/v1/scrape";
 
@@ -13,6 +14,13 @@ export async function scrapePage(url: string): Promise<ScrapedPage> {
   let normalizedUrl = url.trim();
   if (!normalizedUrl.startsWith("http")) {
     normalizedUrl = `https://${normalizedUrl}`;
+  }
+
+  // Check cache first
+  const cached = scrapeCache.get(normalizedUrl) as ScrapedPage | undefined;
+  if (cached) {
+    console.log("[SCRAPER] Cache hit:", normalizedUrl);
+    return cached;
   }
 
   const response = await fetch(FIRECRAWL_API_URL, {
@@ -37,12 +45,17 @@ export async function scrapePage(url: string): Promise<ScrapedPage> {
   const data = await response.json();
   const result = data.data;
 
-  return {
+  const page: ScrapedPage = {
     url: normalizedUrl,
     title: result?.metadata?.title || "",
     content: result?.markdown || "",
     meta_description: result?.metadata?.description || "",
   };
+
+  // Cache the result
+  scrapeCache.set(normalizedUrl, page);
+
+  return page;
 }
 
 export async function scrapePages(
