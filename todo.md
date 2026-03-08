@@ -35,9 +35,10 @@
 - [ ] Wire up "Sync to HubSpot" button in admin dashboard
 
 ### Privacy & Compliance
-- [ ] Privacy notice on homepage
-- [ ] Opt-out option for analytics tracking
-- [ ] GDPR compliance check
+- [x] Privacy notice on homepage
+- [x] Privacy policy page (`/privacy`)
+- [x] Footer privacy links (homepage + results)
+- [ ] Opt-out option for analytics tracking (ei analytiikkaa vielä käytössä)
 
 ### Polish & Production
 - [x] PDF report generation from `result` JSONB
@@ -53,7 +54,9 @@
 - [ ] **Gated results A/B test**: Create alternate results page that shows ONLY user's company OR only competitors in free version. Full view unlocked with email. Keep current version live, test new version at separate route (e.g. `/results-v2/[id]`). Goal: test whether partial results drive higher email capture rate.
 - [x] **Cost calculator in admin dashboard**: Estimate-based cost tracking (Firecrawl + Claude + Tavily) with per-analysis breakdown in admin stats.
 - [ ] **AI API cost optimization**: Investigate and implement cost reduction strategies — prompt compression, model downgrade for simpler tasks (Haiku for competitor discovery?), response caching, batching, token budget limits.
-- [ ] **User analysis history**: Let users see their own previous analyses (but not others'). Could use localStorage, cookies, or session-based tracking to associate analyses with a browser/user.
+- [x] **User analysis history**: Let users see their own previous analyses (localStorage). Full variant on homepage, compact dropdown in results header.
+- [ ] **"Email results" during loading**: Analyysi kestää kauan → tarjoa latausikkunassa mahdollisuus "Lähetä tulokset sähköpostiin, jos et jaksa odottaa". Kerää samalla liidin ja parantaa UX:ää.
+- [ ] **V3 — "Positioning Score" hero-mittari + gating-uudistus**: Iso konseptimuutos. 1) Tulosnäkymä keskittyy käyttäjän omaan yritykseen (ei kilpailijoihin). 2) Health Score nostetaan ensimmäiseksi ja tehdään "Positioning Score" -päämittariksi — Google PageSpeed Insights -tyylinen uskottava indeksi (0–100, värikoodi, selkeä gauge). 3) Kilpailija-vertailu (kartta, kilpailijoiden scoret) on gated sisältöä → email vaaditaan kilpailijoiden näkemiseen. Tämä selkeyttää arvolupauksen: "Katso yrityksesi positiointi-score" (ilmainen) → "Vertaa kilpailijoihin" (email).
 
 ## 🔗 Key Files
 - `src/lib/competitor-finder.ts` — Competitor discovery (scrape → Claude → Tavily → Claude)

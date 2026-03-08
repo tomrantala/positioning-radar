@@ -41,7 +41,11 @@
     "scrapingProgress": "Haetaan sivustoa {current}/{total}...",
     "analyzing": "Tekoäly analysoi positiointia...",
     "generating": "Luodaan positiointikarttaasi...",
-    "patience": "Tämä kestää noin 30–60 sekuntia"
+    "patience": "Tämä kestää noin 30–60 sekuntia",
+    "emailPrompt": "Kestääkö liian kauan? Voimme lähettää tulokset sähköpostiin.",
+    "emailPlaceholder": "sinun@email.fi",
+    "emailSubmit": "Lähetä tulokset sähköpostiin",
+    "emailSent": "Lähetämme tulokset kun ne ovat valmiit!"
   },
   "results": {
     "title": "Positiointianalyysi",
@@ -144,6 +148,21 @@
     "retention2": "Voit pyytää tietojesi poistamista milloin tahansa ottamalla meihin yhteyttä",
     "contactTitle": "Yhteystiedot",
     "contact": "Tietojen poistopyynnöt ja tietosuojakysymykset:"
+  },
+  "v3": {
+    "title": "Yrityksesi positiointianalyysi",
+    "scoreLabel": "Positiointipisteet",
+    "excellent": "Erinomainen",
+    "good": "Hyvä",
+    "needsWork": "Parannettavaa",
+    "poor": "Heikko",
+    "gateTitle": "Katso miten vertaudut kilpailijoihin",
+    "gateDescription": "Syötä sähköpostisi nähdäksesi kilpailukenttäsi — missä yrityksesi sijoittuu kilpailijoiden joukossa.",
+    "gateIncludes1": "Positiointikartta kaikkien kilpailijoiden kanssa",
+    "gateIncludes2": "Keskeiset markkinahavainnot",
+    "gateIncludes3": "Erottuvuuspisteet kaikille yrityksille",
+    "gateSubmit": "Avaa kilpailijanäkymä",
+    "gatePrivacy": "Käytämme sähköpostiasi vain analyysin lähettämiseen."
   },
   "footer": {
     "poweredBy": "Positioning Radar by",

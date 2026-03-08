@@ -41,7 +41,11 @@
     "scrapingProgress": "Fetching {current} of {total} websites...",
     "analyzing": "AI is analyzing positioning...",
     "generating": "Generating your positioning map...",
-    "patience": "This takes about 30–60 seconds"
+    "patience": "This takes about 30–60 seconds",
+    "emailPrompt": "Taking a while? We can email you the results.",
+    "emailPlaceholder": "your@email.com",
+    "emailSubmit": "Send results to email",
+    "emailSent": "We'll send you the results when ready!"
   },
   "results": {
     "title": "Positioning Analysis",
@@ -144,6 +148,21 @@
     "retention2": "You can request deletion of your data at any time by contacting us",
     "contactTitle": "Contact",
     "contact": "For data deletion requests or questions about privacy, contact us at"
+  },
+  "v3": {
+    "title": "Your Positioning Analysis",
+    "scoreLabel": "Positioning Score",
+    "excellent": "Excellent",
+    "good": "Good",
+    "needsWork": "Needs work",
+    "poor": "Poor",
+    "gateTitle": "See how you compare",
+    "gateDescription": "Enter your email to unlock the competitive landscape — see where you stand among competitors.",
+    "gateIncludes1": "Positioning map with all competitors",
+    "gateIncludes2": "Key market insights",
+    "gateIncludes3": "Differentiation scores for all companies",
+    "gateSubmit": "Unlock competitor view",
+    "gatePrivacy": "We'll only use this to send you the analysis."
   },
   "footer": {
     "poweredBy": "Positioning Radar by",

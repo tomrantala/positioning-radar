@@ -18,6 +18,24 @@ export default function HomePage() {
     "scraping" | "analyzing" | "generating"
   >("scraping");
   const [error, setError] = useState<string | null>(null);
+  const [emailSent, setEmailSent] = useState(false);
+
+  const handleLoadingEmail = async (email: string) => {
+    try {
+      await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          analysis_id: null,
+          source: "loading_email_results",
+        }),
+      });
+    } catch {
+      // Graceful fail — still show confirmation
+    }
+    setEmailSent(true);
+  };
 
   const handleAnalyze = async (data: {
     userUrl: string;
@@ -27,6 +45,7 @@ export default function HomePage() {
     setIsLoading(true);
     setError(null);
     setLoadingStage("scraping");
+    setEmailSent(false);
 
     const stageTimer1 = setTimeout(() => setLoadingStage("analyzing"), 8000);
     const stageTimer2 = setTimeout(() => setLoadingStage("generating"), 20000);
@@ -106,7 +125,11 @@ export default function HomePage() {
           {/* Loading or Form */}
           {isLoading ? (
             <div className="rounded-lg border border-zinc-200 bg-white p-6">
-              <LoadingState stage={loadingStage} />
+              <LoadingState
+                stage={loadingStage}
+                onEmailSubmit={handleLoadingEmail}
+                emailSent={emailSent}
+              />
             </div>
           ) : (
             <>
