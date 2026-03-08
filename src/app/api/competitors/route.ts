@@ -10,23 +10,29 @@ const schema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    console.log("[API_COMPETITORS] POST:", body.url);
+
     const parsed = schema.safeParse(body);
 
     if (!parsed.success) {
+      console.log("[API_COMPETITORS] Validation failed");
       return NextResponse.json(
         { error: "Invalid input", details: parsed.error.issues },
         { status: 400 }
       );
     }
 
+    console.log("[API_COMPETITORS] Finding competitors for:", parsed.data.url);
     const result = await findCompetitors(
       parsed.data.url,
       parsed.data.locale || "en"
     );
 
+    console.log("[API_COMPETITORS] Successfully returned", result.competitors.length, "competitors");
     return NextResponse.json(result);
   } catch (error) {
-    console.error("Competitor search error:", error);
+    console.error("[API_COMPETITORS] Error:", error instanceof Error ? error.message : String(error));
+
     return NextResponse.json(
       {
         error: "Failed to find competitors",
