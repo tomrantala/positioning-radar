@@ -47,11 +47,11 @@
 - [x] Add `ADMIN_SECRET` to Vercel production env
 
 ### UX Fixes
-- [ ] Show analyzed URL clearly at top of results page (in the title or subtitle)
-- [ ] Add "Copy URL" button/text to share the analysis results link
+- [x] Show analyzed URL clearly at top of results page (in the title or subtitle)
+- [x] Add "Copy URL" button/text to share the analysis results link
 ### Ideas / Experiments
 - [ ] **Gated results A/B test**: Create alternate results page that shows ONLY user's company OR only competitors in free version. Full view unlocked with email. Keep current version live, test new version at separate route (e.g. `/results-v2/[id]`). Goal: test whether partial results drive higher email capture rate.
-- [ ] **Cost calculator in admin dashboard**: Show how much analyses are costing (Claude API + Tavily tokens) based on real usage data. Views: total to date, weekly, monthly, with time selector. Estimate per-analysis cost breakdown.
+- [x] **Cost calculator in admin dashboard**: Estimate-based cost tracking (Firecrawl + Claude + Tavily) with per-analysis breakdown in admin stats.
 - [ ] **AI API cost optimization**: Investigate and implement cost reduction strategies — prompt compression, model downgrade for simpler tasks (Haiku for competitor discovery?), response caching, batching, token budget limits.
 - [ ] **User analysis history**: Let users see their own previous analyses (but not others'). Could use localStorage, cookies, or session-based tracking to associate analyses with a browser/user.
 

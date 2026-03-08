@@ -14,6 +14,8 @@ import RedFlags from "@/components/RedFlags";
 import EmailGate from "@/components/EmailGate";
 import { PositioningResult } from "@/lib/types";
 import { generateReport } from "@/lib/pdf-report";
+import { saveToHistory } from "@/lib/analysis-history";
+import AnalysisHistory from "@/components/AnalysisHistory";
 import { Link } from "@/i18n/navigation";
 
 export default function ResultsPage() {
@@ -34,6 +36,14 @@ export default function ResultsPage() {
         if (!response.ok) throw new Error("Not found");
         const data = await response.json();
         setResult(data);
+        // Save to browser history for "recent analyses"
+        saveToHistory({
+          id: data.id,
+          userUrl: data.user_company_url,
+          industry: data.industry_context || null,
+          createdAt: data.created_at || new Date().toISOString(),
+          locale,
+        });
       } catch {
         setError("Analysis not found");
       } finally {
@@ -72,6 +82,7 @@ export default function ResultsPage() {
             Positioning Radar
           </Link>
           <div className="flex items-center gap-2 sm:gap-4">
+            <AnalysisHistory variant="compact" currentId={id} />
             <button
               onClick={() => {
                 if (!result) return;
@@ -249,7 +260,13 @@ export default function ResultsPage() {
               {t("footer.meom")}
             </a>
           </p>
-          <p>{t("footer.tagline")}</p>
+          <div className="flex items-center gap-3">
+            <p>{t("footer.tagline")}</p>
+            <span className="text-zinc-300">·</span>
+            <Link href="/privacy" className="hover:text-zinc-600">
+              {t("footer.privacy")}
+            </Link>
+          </div>
         </div>
       </footer>
     </div>

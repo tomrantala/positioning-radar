@@ -25,6 +25,8 @@ vi.mock("next-intl", () => ({
       "footer.poweredBy": "Powered by",
       "footer.meom": "MEOM",
       "footer.tagline": "Tagline",
+      "footer.privacy": "Privacy",
+      "history.title": "Your recent analyses",
     };
     return translations[key] || key;
   },
@@ -68,6 +70,12 @@ vi.mock("@/components/EmailGate", () => ({
 }));
 vi.mock("@/lib/pdf-report", () => ({
   generateReport: () => ({ save: vi.fn() }),
+}));
+vi.mock("@/lib/analysis-history", () => ({
+  saveToHistory: vi.fn(),
+}));
+vi.mock("@/components/AnalysisHistory", () => ({
+  default: () => <div data-testid="analysis-history" />,
 }));
 
 const mockResult = {

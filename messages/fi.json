@@ -118,9 +118,37 @@
     "thankYouDescription": "Käymme positiointianalyysisi läpi ja palaamme asiantuntijanäkemyksillämme 2 arkipäivän kuluessa.",
     "privacy": "Otamme sinuun yhteyttä ainoastaan positiointianalyysiisi liittyen."
   },
+  "history": {
+    "title": "Viimeaikaiset analyysisi",
+    "clear": "Tyhjennä historia"
+  },
+  "privacy": {
+    "notice": "Analysoimme julkisesti saatavilla olevaa verkkosivusisältöä. URL-osoitteesi ja tulokset tallennetaan palvelun tuottamiseksi.",
+    "link": "Tietosuojaseloste",
+    "pageTitle": "Tietosuojaseloste",
+    "lastUpdated": "Päivitetty viimeksi: maaliskuu 2026",
+    "intro": "Positioning Radar on MEOM Oy:n palvelu. Tällä sivulla kuvataan, mitä tietoja keräämme ja miten niitä käytetään.",
+    "dataCollectedTitle": "Keräämämme tiedot",
+    "dataCollected1": "Analyysiin lähettämäsi verkkosivujen URL-osoitteet",
+    "dataCollected2": "Kilpailijoiden URL-osoitteet (automaattisesti tunnistetut tai manuaalisesti syötetyt)",
+    "dataCollected3": "Analyysitulokset (positiointikartta, pisteet, havainnot)",
+    "dataCollected4": "Sähköpostiosoitteesi, jos avaat täyden raportin tai pyydät syväanalyysiä",
+    "dataCollected5": "Selaimesi tallentaa analyysihistorian paikallisesti (localStorage) — tämä tieto ei poistu laitteeltasi",
+    "howUsedTitle": "Miten käytämme tietojasi",
+    "howUsed1": "Positiointianalyysin tuottamiseen ja näyttämiseen",
+    "howUsed2": "Täyden raportin tai asiantuntija-analyysin lähettämiseen pyydettäessä",
+    "howUsed3": "Emme myy tai jaa tietojasi kolmansille osapuolille",
+    "howUsed4": "Emme käytä seurantaevästeitä tai analytiikkaseurantaa",
+    "retentionTitle": "Tietojen säilytys",
+    "retention1": "Analyysitulokset säilytetään toistaiseksi, jotta voit käyttää niitä uniikin URL-osoitteen kautta",
+    "retention2": "Voit pyytää tietojesi poistamista milloin tahansa ottamalla meihin yhteyttä",
+    "contactTitle": "Yhteystiedot",
+    "contact": "Tietojen poistopyynnöt ja tietosuojakysymykset:"
+  },
   "footer": {
     "poweredBy": "Positioning Radar by",
     "meom": "MEOM",
-    "tagline": "Tekoälypohjainen positiointianalyysi"
+    "tagline": "Tekoälypohjainen positiointianalyysi",
+    "privacy": "Tietosuoja"
   }
 }

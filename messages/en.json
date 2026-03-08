@@ -118,9 +118,37 @@
     "thankYouDescription": "We'll review your positioning analysis and get back to you with our expert insights within 2 business days.",
     "privacy": "We'll only contact you about your positioning analysis."
   },
+  "history": {
+    "title": "Your recent analyses",
+    "clear": "Clear history"
+  },
+  "privacy": {
+    "notice": "We analyze publicly available website content. Your URL and results are stored to provide this service.",
+    "link": "Privacy policy",
+    "pageTitle": "Privacy Policy",
+    "lastUpdated": "Last updated: March 2026",
+    "intro": "Positioning Radar is a service by MEOM Oy. This page describes what data we collect and how we use it.",
+    "dataCollectedTitle": "Data we collect",
+    "dataCollected1": "Website URLs you submit for analysis",
+    "dataCollected2": "Competitor URLs (auto-detected or manually entered)",
+    "dataCollected3": "Analysis results (positioning map, scores, insights)",
+    "dataCollected4": "Your email address, if you choose to unlock the full report or request a deep analysis",
+    "dataCollected5": "Your browser stores analysis history locally (localStorage) — this data never leaves your device",
+    "howUsedTitle": "How we use your data",
+    "howUsed1": "To generate and display your positioning analysis",
+    "howUsed2": "To send you the full report or expert analysis, if requested",
+    "howUsed3": "We do not sell or share your data with third parties",
+    "howUsed4": "We do not use tracking cookies or analytics trackers",
+    "retentionTitle": "Data retention",
+    "retention1": "Analysis results are stored indefinitely so you can access them via their unique URL",
+    "retention2": "You can request deletion of your data at any time by contacting us",
+    "contactTitle": "Contact",
+    "contact": "For data deletion requests or questions about privacy, contact us at"
+  },
   "footer": {
     "poweredBy": "Positioning Radar by",
     "meom": "MEOM",
-    "tagline": "AI-powered positioning analysis"
+    "tagline": "AI-powered positioning analysis",
+    "privacy": "Privacy"
   }
 }

@@ -15,6 +15,8 @@ import PositioningHealthDetail from "@/components/PositioningHealthDetail";
 import RedFlags from "@/components/RedFlags";
 import EmailGate from "@/components/EmailGate";
 import { PositioningResult } from "@/lib/types";
+import { saveToHistory } from "@/lib/analysis-history";
+import AnalysisHistory from "@/components/AnalysisHistory";
 import { Link } from "@/i18n/navigation";
 
 export default function HomePage() {
@@ -63,6 +65,14 @@ export default function HomePage() {
 
       const analysisResult = await response.json();
       setResult(analysisResult);
+      // Save to browser history
+      saveToHistory({
+        id: analysisResult.id,
+        userUrl: analysisResult.user_company_url,
+        industry: analysisResult.industry_context || null,
+        createdAt: analysisResult.created_at || new Date().toISOString(),
+        locale,
+      });
       // Update browser URL to the unique results page (without full navigation)
       window.history.pushState(null, "", `/${locale}/results/${analysisResult.id}`);
     } catch (err) {
@@ -268,9 +278,17 @@ export default function HomePage() {
                 <LoadingState stage={loadingStage} />
               </div>
             ) : (
-              <div className="rounded-lg border border-zinc-200 bg-white p-8">
-                <UrlInput onSubmit={handleAnalyze} isLoading={isLoading} />
-              </div>
+              <>
+                <div className="rounded-lg border border-zinc-200 bg-white p-8">
+                  <UrlInput onSubmit={handleAnalyze} isLoading={isLoading} />
+                </div>
+                <p className="mt-3 text-center text-xs text-zinc-400">
+                  {t("privacy.notice")}{" "}
+                  <Link href="/privacy" className="underline hover:text-zinc-600">
+                    {t("privacy.link")}
+                  </Link>
+                </p>
+              </>
             )}
 
             {/* Error */}
@@ -279,6 +297,9 @@ export default function HomePage() {
                 <p className="text-sm text-red-600">{error}</p>
               </div>
             )}
+
+            {/* Previous analyses */}
+            {!isLoading && <AnalysisHistory variant="full" />}
           </div>
         )}
       </main>
@@ -297,7 +318,13 @@ export default function HomePage() {
               {t("footer.meom")}
             </a>
           </p>
-          <p>{t("footer.tagline")}</p>
+          <div className="flex items-center gap-3">
+            <p>{t("footer.tagline")}</p>
+            <span className="text-zinc-300">·</span>
+            <Link href="/privacy" className="hover:text-zinc-600">
+              {t("footer.privacy")}
+            </Link>
+          </div>
         </div>
       </footer>
     </div>
