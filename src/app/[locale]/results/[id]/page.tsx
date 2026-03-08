@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import PositioningMap from "@/components/PositioningMap";
 import InsightCards from "@/components/InsightCards";
 import DifferentiationScore from "@/components/DifferentiationScore";
@@ -18,12 +18,14 @@ import { Link } from "@/i18n/navigation";
 
 export default function ResultsPage() {
   const t = useTranslations();
+  const locale = useLocale();
   const params = useParams();
   const id = params.id as string;
   const [result, setResult] = useState<PositioningResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isUnlocked, setIsUnlocked] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   useEffect(() => {
     async function fetchResult() {
@@ -83,6 +85,23 @@ export default function ResultsPage() {
               </svg>
               <span className="hidden sm:inline">PDF</span>
             </button>
+            <button
+              type="button"
+              onClick={() => {
+                const url = `${window.location.origin}/${locale}/results/${id}`;
+                navigator.clipboard.writeText(url);
+                setLinkCopied(true);
+                setTimeout(() => setLinkCopied(false), 2000);
+              }}
+              className="text-sm text-zinc-600 hover:text-zinc-900 font-medium flex items-center gap-1"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              <span className="hidden sm:inline">
+                {linkCopied ? t("results.linkCopied") : t("results.copyLink")}
+              </span>
+            </button>
             <Link
               href="/"
               className="text-sm text-red-600 hover:text-red-700 font-medium whitespace-nowrap"
@@ -94,9 +113,19 @@ export default function ResultsPage() {
       </header>
 
       <main className="mx-auto max-w-5xl px-4 py-8 sm:py-12 space-y-8 sm:space-y-10">
-        <h2 className="text-2xl font-bold text-zinc-900">
-          {t("results.title")}
-        </h2>
+        <div>
+          <h2 className="text-2xl font-bold text-zinc-900">
+            {t("results.title")}
+          </h2>
+          <a
+            href={result.user_company_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-zinc-500 hover:text-zinc-700 underline truncate block mt-1"
+          >
+            {result.user_company_url}
+          </a>
+        </div>
 
         <div className="rounded-lg border border-zinc-200 bg-white p-6">
           <h3 className="text-sm font-medium text-zinc-500 mb-1">

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase";
 import { validateAdminRequest } from "@/lib/admin-auth";
+import { calculateCostEstimates } from "@/lib/cost-estimator";
 
 export async function GET(request: NextRequest) {
   const authError = validateAdminRequest(request);
@@ -40,6 +41,12 @@ export async function GET(request: NextRequest) {
     locales[row.locale] = (locales[row.locale] || 0) + 1;
   });
 
+  const costEstimates = calculateCostEstimates({
+    totalAnalyses: totalAnalyses.count || 0,
+    analysesThisWeek: weekAnalyses.count || 0,
+    analysesThisMonth: monthAnalyses.count || 0,
+  });
+
   return NextResponse.json({
     total_analyses: totalAnalyses.count || 0,
     total_leads: totalLeads.count || 0,
@@ -48,5 +55,6 @@ export async function GET(request: NextRequest) {
     leads_this_week: weekLeads.count || 0,
     industries,
     locales,
+    cost_estimates: costEstimates,
   });
 }

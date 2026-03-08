@@ -3,6 +3,18 @@
 import { useState, useEffect, useCallback } from "react";
 import { toCSV, downloadCSV } from "@/lib/csv";
 
+interface CostEstimate {
+  estimatedTotalCost: number;
+  estimatedWeekCost: number;
+  estimatedMonthCost: number;
+  estimatedCostPerAnalysis: number;
+  costBreakdown: {
+    firecrawlPerAnalysis: number;
+    claudePerAnalysis: number;
+    tavilyPerAnalysis: number;
+  };
+}
+
 interface Stats {
   total_analyses: number;
   total_leads: number;
@@ -11,6 +23,7 @@ interface Stats {
   leads_this_week: number;
   industries: Record<string, number>;
   locales: Record<string, number>;
+  cost_estimates: CostEstimate;
 }
 
 interface AnalysisRow {
@@ -181,6 +194,39 @@ export default function AdminPage() {
                     {industry} <span className="font-semibold">{count}</span>
                   </span>
                 ))}
+            </div>
+          </div>
+        )}
+
+        {/* Cost Estimates */}
+        {stats && stats.cost_estimates && (
+          <div className="space-y-4">
+            <h2 className="text-sm font-semibold text-zinc-900">Cost Estimates</h2>
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+              <StatCard
+                label="Total Est. Cost"
+                value={`$${stats.cost_estimates.estimatedTotalCost.toFixed(2)}`}
+              />
+              <StatCard
+                label="Cost (7d)"
+                value={`$${stats.cost_estimates.estimatedWeekCost.toFixed(2)}`}
+              />
+              <StatCard
+                label="Cost (30d)"
+                value={`$${stats.cost_estimates.estimatedMonthCost.toFixed(2)}`}
+              />
+              <StatCard
+                label="Avg per Analysis"
+                value={`$${stats.cost_estimates.estimatedCostPerAnalysis.toFixed(3)}`}
+              />
+            </div>
+            <div className="rounded-lg border border-zinc-200 bg-white p-4">
+              <h3 className="text-xs font-medium text-zinc-500 mb-2">Per-Analysis Breakdown (estimate)</h3>
+              <div className="flex flex-wrap gap-4 text-xs text-zinc-600">
+                <span>Firecrawl: ${stats.cost_estimates.costBreakdown.firecrawlPerAnalysis.toFixed(3)}</span>
+                <span>Claude: ${stats.cost_estimates.costBreakdown.claudePerAnalysis.toFixed(3)}</span>
+                <span>Tavily: ${stats.cost_estimates.costBreakdown.tavilyPerAnalysis.toFixed(3)}</span>
+              </div>
             </div>
           </div>
         )}
@@ -449,7 +495,7 @@ function LoginForm({ onLogin }: { onLogin: (token: string) => void }) {
   );
 }
 
-function StatCard({ label, value }: { label: string; value: number }) {
+function StatCard({ label, value }: { label: string; value: number | string }) {
   return (
     <div className="rounded-lg border border-zinc-200 bg-white p-4">
       <p className="text-xs font-medium text-zinc-500">{label}</p>
