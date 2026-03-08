@@ -7,6 +7,11 @@ vi.mock("@/lib/supabase", () => ({
   }),
 }));
 
+vi.mock("@/lib/rate-limit", () => ({
+  subscribeLimiter: { check: () => ({ allowed: true, remaining: 99, retryAfterMs: 0 }) },
+  applyRateLimit: () => null,
+}));
+
 import { POST } from "@/app/api/subscribe/route";
 import { NextRequest } from "next/server";
 

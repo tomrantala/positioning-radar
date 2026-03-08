@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod/v4";
 import { findCompetitors } from "@/lib/competitor-finder";
+import { competitorLimiter, applyRateLimit } from "@/lib/rate-limit";
 
 const schema = z.object({
   url: z.url(),
@@ -8,6 +9,9 @@ const schema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  const rateLimitResponse = applyRateLimit(competitorLimiter, request);
+  if (rateLimitResponse) return rateLimitResponse;
+
   try {
     const body = await request.json();
     console.log("[API_COMPETITORS] POST:", body.url);

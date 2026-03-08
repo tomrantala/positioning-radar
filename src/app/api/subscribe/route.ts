@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod/v4";
 import { createServerClient } from "@/lib/supabase";
+import { subscribeLimiter, applyRateLimit } from "@/lib/rate-limit";
 
 const subscribeSchema = z.object({
   email: z.email(),
@@ -9,6 +10,9 @@ const subscribeSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  const rateLimitResponse = applyRateLimit(subscribeLimiter, request);
+  if (rateLimitResponse) return rateLimitResponse;
+
   try {
     const body = await request.json();
     const parsed = subscribeSchema.safeParse(body);

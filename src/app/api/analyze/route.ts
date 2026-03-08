@@ -3,6 +3,7 @@ import { z } from "zod/v4";
 import { scrapePages } from "@/lib/scraper";
 import { analyzePositioning } from "@/lib/analyzer";
 import { createServerClient } from "@/lib/supabase";
+import { analyzeLimiter, applyRateLimit } from "@/lib/rate-limit";
 
 const analyzeSchema = z.object({
   user_url: z.url(),
@@ -12,6 +13,9 @@ const analyzeSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  const rateLimitResponse = applyRateLimit(analyzeLimiter, request);
+  if (rateLimitResponse) return rateLimitResponse;
+
   try {
     const body = await request.json();
     const parsed = analyzeSchema.safeParse(body);

@@ -20,6 +20,11 @@ vi.mock("@/lib/supabase", () => ({
   }),
 }));
 
+vi.mock("@/lib/rate-limit", () => ({
+  analyzeLimiter: { check: () => ({ allowed: true, remaining: 99, retryAfterMs: 0 }) },
+  applyRateLimit: () => null,
+}));
+
 import { POST } from "@/app/api/analyze/route";
 import { NextRequest } from "next/server";
 

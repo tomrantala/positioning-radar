@@ -7,6 +7,11 @@ vi.mock("@/lib/competitor-finder", () => ({
   findCompetitors: mockFindCompetitors,
 }));
 
+vi.mock("@/lib/rate-limit", () => ({
+  competitorLimiter: { check: () => ({ allowed: true, remaining: 99, retryAfterMs: 0 }) },
+  applyRateLimit: () => null,
+}));
+
 import { POST } from "@/app/api/competitors/route";
 import { NextRequest } from "next/server";
 
