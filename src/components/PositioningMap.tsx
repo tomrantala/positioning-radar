@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   Label,
   ReferenceLine,
+  LabelList,
 } from "recharts";
 import { CompanyAnalysis, PositioningAxis } from "@/lib/types";
 
@@ -61,12 +62,13 @@ export default function PositioningMap({
   return (
     <div className="w-full">
       {/* Axis labels */}
-      <div className="flex justify-between text-xs text-zinc-400 mb-1 px-12">
+      <div className="flex justify-between text-xs text-zinc-400 mb-1 px-4 sm:px-12">
         <span>{axes.y.high_label}</span>
       </div>
 
-      <ResponsiveContainer width="100%" height={500}>
-        <ScatterChart margin={{ top: 20, right: 40, bottom: 40, left: 40 }}>
+      <div className="h-[350px] sm:h-[500px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <ScatterChart margin={{ top: 20, right: 20, bottom: 40, left: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
           <XAxis
             type="number"
@@ -74,13 +76,13 @@ export default function PositioningMap({
             domain={[-100, 100]}
             tickCount={5}
             stroke="#a1a1aa"
-            fontSize={12}
+            fontSize={11}
           >
             <Label
               value={axes.x.label}
               position="bottom"
               offset={15}
-              style={{ fill: "#71717a", fontSize: 13 }}
+              style={{ fill: "#71717a", fontSize: 12 }}
             />
           </XAxis>
           <YAxis
@@ -89,14 +91,14 @@ export default function PositioningMap({
             domain={[-100, 100]}
             tickCount={5}
             stroke="#a1a1aa"
-            fontSize={12}
+            fontSize={11}
           >
             <Label
               value={axes.y.label}
               angle={-90}
               position="left"
-              offset={15}
-              style={{ fill: "#71717a", fontSize: 13 }}
+              offset={5}
+              style={{ fill: "#71717a", fontSize: 12 }}
             />
           </YAxis>
           <ReferenceLine x={0} stroke="#e4e4e7" />
@@ -113,7 +115,14 @@ export default function PositioningMap({
             stroke="#64748b"
             strokeWidth={2}
             r={8}
-          />
+          >
+            <LabelList
+              dataKey="name"
+              position="bottom"
+              offset={12}
+              style={{ fill: "#71717a", fontSize: 10, fontWeight: 500 }}
+            />
+          </Scatter>
           {/* User's company - highlighted */}
           <Scatter
             name="Your company"
@@ -122,16 +131,24 @@ export default function PositioningMap({
             stroke="#dc2626"
             strokeWidth={2}
             r={12}
-          />
+          >
+            <LabelList
+              dataKey="name"
+              position="bottom"
+              offset={14}
+              style={{ fill: "#dc2626", fontSize: 11, fontWeight: 600 }}
+            />
+          </Scatter>
         </ScatterChart>
       </ResponsiveContainer>
+      </div>
 
       {/* Bottom axis labels */}
-      <div className="flex justify-between text-xs text-zinc-400 px-12 -mt-2">
+      <div className="flex justify-between text-xs text-zinc-400 px-4 sm:px-12 -mt-2">
         <span>{axes.x.low_label}</span>
         <span>{axes.x.high_label}</span>
       </div>
-      <div className="flex justify-between text-xs text-zinc-400 mt-1 px-12">
+      <div className="flex justify-between text-xs text-zinc-400 mt-1 px-4 sm:px-12">
         <span>{axes.y.low_label}</span>
       </div>
 

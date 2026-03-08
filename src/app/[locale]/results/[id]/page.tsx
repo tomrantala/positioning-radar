@@ -65,11 +65,11 @@ export default function ResultsPage() {
   return (
     <div className="min-h-screen bg-zinc-50">
       <header className="border-b border-zinc-200 bg-white">
-        <div className="mx-auto max-w-5xl px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-zinc-900">
+        <div className="mx-auto max-w-5xl px-4 py-4 flex items-center justify-between gap-2">
+          <Link href="/" className="text-lg sm:text-xl font-bold text-zinc-900 shrink-0">
             Positioning Radar
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={() => {
                 if (!result) return;
@@ -81,11 +81,11 @@ export default function ResultsPage() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              PDF
+              <span className="hidden sm:inline">PDF</span>
             </button>
             <Link
               href="/"
-              className="text-sm text-red-600 hover:text-red-700 font-medium"
+              className="text-sm text-red-600 hover:text-red-700 font-medium whitespace-nowrap"
             >
               {t("results.newAnalysis")}
             </Link>
@@ -93,7 +93,7 @@ export default function ResultsPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-12 space-y-10">
+      <main className="mx-auto max-w-5xl px-4 py-8 sm:py-12 space-y-8 sm:space-y-10">
         <h2 className="text-2xl font-bold text-zinc-900">
           {t("results.title")}
         </h2>
@@ -208,7 +208,7 @@ export default function ResultsPage() {
       </main>
 
       <footer className="border-t border-zinc-200 bg-white mt-20">
-        <div className="mx-auto max-w-5xl px-4 py-6 flex items-center justify-between text-sm text-zinc-400">
+        <div className="mx-auto max-w-5xl px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-zinc-400">
           <p>
             {t("footer.poweredBy")}{" "}
             <a

@@ -40,11 +40,16 @@
 - [ ] GDPR compliance check
 
 ### Polish & Production
-- [ ] PDF report generation from `result` JSONB
-- [ ] Rate limiting (API quota per IP)
-- [ ] Performance: cache Tavily/Claude responses
-- [ ] Mobile responsive polish
-- [ ] Add `ADMIN_SECRET` to Vercel production env
+- [x] PDF report generation from `result` JSONB
+- [x] Rate limiting (API quota per IP — sliding window, in-memory)
+- [x] Performance: cache Tavily/Claude responses
+- [x] Mobile responsive polish
+- [x] Add `ADMIN_SECRET` to Vercel production env
+
+### Ideas / Experiments
+- [ ] **Gated results A/B test**: Create alternate results page that shows ONLY user's company OR only competitors in free version. Full view unlocked with email. Keep current version live, test new version at separate route (e.g. `/results-v2/[id]`). Goal: test whether partial results drive higher email capture rate.
+- [ ] **Cost calculator in admin dashboard**: Show how much analyses are costing (Claude API + Tavily tokens) based on real usage data. Views: total to date, weekly, monthly, with time selector. Estimate per-analysis cost breakdown.
+- [ ] **AI API cost optimization**: Investigate and implement cost reduction strategies — prompt compression, model downgrade for simpler tasks (Haiku for competitor discovery?), response caching, batching, token budget limits.
 
 ## 🔗 Key Files
 - `src/lib/competitor-finder.ts` — Competitor discovery (scrape → Claude → Tavily → Claude)

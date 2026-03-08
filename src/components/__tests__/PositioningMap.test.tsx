@@ -8,8 +8,8 @@ vi.mock("recharts", () => ({
   ScatterChart: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="scatter-chart">{children}</div>
   ),
-  Scatter: ({ name, data }: { name: string; data: unknown[] }) => (
-    <div data-testid={`scatter-${name}`} data-count={data.length} />
+  Scatter: ({ name, data, children }: { name: string; data: unknown[]; children?: React.ReactNode }) => (
+    <div data-testid={`scatter-${name}`} data-count={data.length}>{children}</div>
   ),
   XAxis: () => <div />,
   YAxis: () => <div />,
@@ -19,6 +19,7 @@ vi.mock("recharts", () => ({
     <div>{children}</div>
   ),
   Label: () => <div />,
+  LabelList: () => <div />,
   ReferenceLine: () => <div />,
 }));
 

@@ -285,7 +285,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="border-t border-zinc-200 bg-white mt-20">
-        <div className="mx-auto max-w-5xl px-4 py-6 flex items-center justify-between text-sm text-zinc-400">
+        <div className="mx-auto max-w-5xl px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-zinc-400">
           <p>
             {t("footer.poweredBy")}{" "}
             <a
