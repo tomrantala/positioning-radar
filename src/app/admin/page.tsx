@@ -20,6 +20,7 @@ interface AnalysisRow {
   competitor_urls: string[];
   industry: string | null;
   locale: string;
+  leads: { email: string }[];
 }
 
 interface LeadRow {
@@ -117,11 +118,12 @@ export default function AdminPage() {
         created_at: a.created_at,
         user_url: a.user_url,
         industry: a.industry || "",
+        email: a.leads?.[0]?.email || "",
         locale: a.locale,
         competitor_count: a.competitor_urls?.length || 0,
         competitor_urls: a.competitor_urls,
       })),
-      ["id", "created_at", "user_url", "industry", "locale", "competitor_count", "competitor_urls"]
+      ["id", "created_at", "user_url", "industry", "email", "locale", "competitor_count", "competitor_urls"]
     );
     downloadCSV(csv, `analyses-${new Date().toISOString().split("T")[0]}.csv`);
   };
@@ -245,6 +247,7 @@ export default function AdminPage() {
                     <th className="px-4 py-3">Date</th>
                     <th className="px-4 py-3">URL</th>
                     <th className="px-4 py-3">Industry</th>
+                    <th className="px-4 py-3">Email</th>
                     <th className="px-4 py-3">Locale</th>
                     <th className="px-4 py-3 text-right">Competitors</th>
                   </tr>
@@ -274,6 +277,9 @@ export default function AdminPage() {
                         </a>
                       </td>
                       <td className="px-4 py-3 text-zinc-700">{a.industry || "—"}</td>
+                      <td className="px-4 py-3 text-zinc-600">
+                        {a.leads?.[0]?.email || <span className="text-zinc-300">—</span>}
+                      </td>
                       <td className="px-4 py-3 text-zinc-500">{a.locale}</td>
                       <td className="px-4 py-3 text-right text-zinc-500">
                         {a.competitor_urls?.length || 0}
@@ -282,7 +288,7 @@ export default function AdminPage() {
                   ))}
                   {analyses.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="px-4 py-8 text-center text-zinc-400">
+                      <td colSpan={6} className="px-4 py-8 text-center text-zinc-400">
                         No analyses found
                       </td>
                     </tr>

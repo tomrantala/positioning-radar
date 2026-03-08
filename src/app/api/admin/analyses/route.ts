@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
 
   let query = supabase
     .from("analyses")
-    .select("id, created_at, user_url, competitor_urls, industry, locale", { count: "exact" })
+    .select("id, created_at, user_url, competitor_urls, industry, locale, leads(email)", { count: "exact" })
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
