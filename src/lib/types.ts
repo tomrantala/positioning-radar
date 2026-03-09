@@ -10,6 +10,12 @@ export interface FiveSecondTest {
   result: "pass" | "partial" | "fail";
   what_visitor_understands: string;
   what_is_unclear: string;
+  // Extended fields used in reports
+  clarity_score?: number;
+  first_impression?: string;
+  identified_offering?: string;
+  target_audience_guess?: string;
+  emotional_tone?: string;
 }
 
 // --- Positioning Health (MEOM 6 Elements) ---
@@ -42,6 +48,8 @@ export interface RedFlagDetail {
   type: RedFlagType;
   example: string; // concrete example from the website
   suggestion: string; // how to fix it
+  severity?: "low" | "medium" | "high";
+  explanation?: string; // detailed explanation (used in reports)
 }
 
 // --- Company Analysis ---
