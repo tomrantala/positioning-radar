@@ -3,21 +3,22 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
-import PositioningScoreGauge from "@/components/PositioningScoreGauge";
-import FiveSecondTest from "@/components/FiveSecondTest";
-import PositioningHealthDetail from "@/components/PositioningHealthDetail";
-import RedFlags from "@/components/RedFlags";
 import PositioningMap from "@/components/PositioningMap";
 import InsightCards from "@/components/InsightCards";
 import DifferentiationScore from "@/components/DifferentiationScore";
 import ContactCTA from "@/components/ContactCTA";
+import FiveSecondTest from "@/components/FiveSecondTest";
+import PositioningHealthScore from "@/components/PositioningHealthScore";
+import PositioningHealthDetail from "@/components/PositioningHealthDetail";
+import RedFlags from "@/components/RedFlags";
+import EmailGate from "@/components/EmailGate";
 import { PositioningResult } from "@/lib/types";
 import { generateReport } from "@/lib/pdf-report";
 import { saveToHistory } from "@/lib/analysis-history";
 import AnalysisHistory from "@/components/AnalysisHistory";
 import { Link } from "@/i18n/navigation";
 
-export default function ResultsPage() {
+export default function ResultsV2Page() {
   const t = useTranslations();
   const locale = useLocale();
   const params = useParams();
@@ -26,8 +27,7 @@ export default function ResultsPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isUnlocked, setIsUnlocked] = useState(false);
-  const [gateEmail, setGateEmail] = useState("");
-  const [gateSubmitting, setGateSubmitting] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   useEffect(() => {
     async function fetchResult() {
@@ -36,6 +36,7 @@ export default function ResultsPage() {
         if (!response.ok) throw new Error("Not found");
         const data = await response.json();
         setResult(data);
+        // Save to browser history for "recent analyses"
         saveToHistory({
           id: data.id,
           userUrl: data.user_company_url,
@@ -73,38 +74,8 @@ export default function ResultsPage() {
     );
   }
 
-  // Extract user's company
-  const userCompany =
-    result.companies.find((c) => c.url === result.user_company_url) ||
-    result.companies[0];
-
-  const userScore = userCompany?.positioning_health?.total_score ?? 0;
-
-  const handleGateSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!gateEmail.trim()) return;
-    setGateSubmitting(true);
-    try {
-      await fetch("/api/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: gateEmail.trim(),
-          analysis_id: result.id,
-          source: "v3_competitor_unlock",
-        }),
-      });
-      setIsUnlocked(true);
-    } catch {
-      setIsUnlocked(true);
-    } finally {
-      setGateSubmitting(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-zinc-50">
-      {/* Header */}
       <header className="border-b border-zinc-200 bg-white">
         <div className="mx-auto max-w-5xl px-4 py-4 flex items-center justify-between gap-2">
           <Link href="/" className="text-lg sm:text-xl font-bold text-zinc-900 shrink-0">
@@ -125,6 +96,23 @@ export default function ResultsPage() {
               </svg>
               <span className="hidden sm:inline">PDF</span>
             </button>
+            <button
+              type="button"
+              onClick={() => {
+                const url = `${window.location.origin}/${locale}/results-v2/${id}`;
+                navigator.clipboard.writeText(url);
+                setLinkCopied(true);
+                setTimeout(() => setLinkCopied(false), 2000);
+              }}
+              className="text-sm text-zinc-600 hover:text-zinc-900 font-medium flex items-center gap-1"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              <span className="hidden sm:inline">
+                {linkCopied ? t("results.linkCopied") : t("results.copyLink")}
+              </span>
+            </button>
             <Link
               href="/"
               className="text-sm text-red-600 hover:text-red-700 font-medium whitespace-nowrap"
@@ -136,18 +124,21 @@ export default function ResultsPage() {
       </header>
 
       <main className="mx-auto max-w-5xl px-4 py-8 sm:py-12 space-y-8 sm:space-y-10">
-        {/* Hero: Positioning Score Gauge */}
-        <div className="rounded-lg border border-zinc-200 bg-white p-6">
-          <h2 className="text-2xl font-bold text-zinc-900 text-center mb-2">
-            {t("v3.title")}
+        <div>
+          <h2 className="text-2xl font-bold text-zinc-900">
+            {t("results.title")}
           </h2>
-          <PositioningScoreGauge
-            score={userScore}
-            companyUrl={result.user_company_url}
-          />
+          <a
+            href={result.user_company_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-zinc-500 hover:text-zinc-700 underline truncate block mt-1"
+          >
+            {result.user_company_url}
+          </a>
         </div>
 
-        {/* Recommendations (FREE — moved to 2nd) */}
+        {/* Recommendations (FREE — moved to top) */}
         {result.recommendations && result.recommendations.length > 0 && (
           <div className="rounded-lg border border-zinc-200 bg-white p-6">
             <h3 className="text-lg font-semibold text-zinc-900 mb-1">
@@ -164,114 +155,90 @@ export default function ResultsPage() {
           </div>
         )}
 
-        {/* 5-Second Test (user only) */}
-        {userCompany?.five_second_test && (
+        <div className="rounded-lg border border-zinc-200 bg-white p-6">
+          <h3 className="text-sm font-medium text-zinc-500 mb-1">
+            {t("results.industryContext")}
+          </h3>
+          <p className="text-zinc-700">{result.industry_context}</p>
+        </div>
+
+        <div className="rounded-lg border border-zinc-200 bg-white p-6">
+          <h3 className="text-lg font-semibold text-zinc-900 mb-4">
+            {t("results.map")}
+          </h3>
+          <PositioningMap
+            companies={result.companies}
+            axes={result.axes}
+            userCompanyUrl={result.user_company_url}
+          />
+        </div>
+
+        {/* 5 Second Test (v2 — FREE) */}
+        {result.companies[0]?.five_second_test && (
           <div className="rounded-lg border border-zinc-200 bg-white p-6">
             <FiveSecondTest
-              companies={[userCompany]}
+              companies={result.companies}
               userCompanyUrl={result.user_company_url}
             />
           </div>
         )}
 
-        {/* Health Detail (user only — FREE, 6 separate cards) */}
-        {userCompany?.positioning_health && (
-          <PositioningHealthDetail
-            companies={[userCompany]}
-            userCompanyUrl={result.user_company_url}
+        {/* Health Score + Red Flags side by side (v2 — FREE) */}
+        {result.companies[0]?.five_second_test && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {result.companies[0]?.positioning_health && (
+              <div className="rounded-lg border border-zinc-200 bg-white p-6">
+                <PositioningHealthScore
+                  companies={result.companies}
+                  userCompanyUrl={result.user_company_url}
+                />
+              </div>
+            )}
+            {result.companies[0]?.red_flag_details != null && (
+              <div className="rounded-lg border border-zinc-200 bg-white p-6">
+                <RedFlags
+                  companies={result.companies}
+                  userCompanyUrl={result.user_company_url}
+                />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Insights + Differentiation Score */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="rounded-lg border border-zinc-200 bg-white p-6">
+            <InsightCards
+              insights={result.insights}
+              title={t("results.insights")}
+            />
+          </div>
+          <div className="rounded-lg border border-zinc-200 bg-white p-6">
+            <DifferentiationScore
+              companies={result.companies}
+              userCompanyUrl={result.user_company_url}
+              title={t("results.score")}
+              description={t("results.scoreDescription")}
+            />
+          </div>
+        </div>
+
+        {/* Gating: EmailGate OR Gated content */}
+        {result.companies[0]?.five_second_test && !isUnlocked && (
+          <EmailGate
+            analysisId={result.id}
+            onUnlock={() => setIsUnlocked(true)}
           />
         )}
 
-        {/* Red Flags (user only) */}
-        {userCompany?.red_flag_details != null && (
-          <div className="rounded-lg border border-zinc-200 bg-white p-6">
-            <RedFlags
-              companies={[userCompany]}
-              userCompanyUrl={result.user_company_url}
-            />
-          </div>
-        )}
-
-        {/* Email Gate for competitor content */}
-        {!isUnlocked && (
-          <div className="rounded-lg border-2 border-red-200 bg-red-50 p-8">
-            <div className="max-w-lg mx-auto text-center">
-              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-zinc-900 mb-2">{t("v3.gateTitle")}</h3>
-              <p className="text-zinc-600 mb-4">{t("v3.gateDescription")}</p>
-
-              <ul className="text-sm text-zinc-600 text-left space-y-1.5 mb-6 max-w-xs mx-auto">
-                <li className="flex items-start gap-2">
-                  <span className="text-red-500 mt-0.5">✓</span>
-                  {t("v3.gateIncludes1")}
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-500 mt-0.5">✓</span>
-                  {t("v3.gateIncludes2")}
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-500 mt-0.5">✓</span>
-                  {t("v3.gateIncludes3")}
-                </li>
-              </ul>
-
-              <form onSubmit={handleGateSubmit} className="space-y-3">
-                <input
-                  type="email"
-                  value={gateEmail}
-                  onChange={(e) => setGateEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  required
-                  className="w-full rounded-lg border border-red-200 bg-white px-4 py-3 text-zinc-900 placeholder:text-zinc-400 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none"
-                />
-                <button
-                  type="submit"
-                  disabled={gateSubmitting}
-                  className="w-full rounded-lg bg-red-600 px-6 py-3 text-white font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
-                >
-                  {t("v3.gateSubmit")}
-                </button>
-              </form>
-
-              <p className="text-xs text-zinc-400 mt-3">{t("v3.gatePrivacy")}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Gated: Competitor Content */}
-        {isUnlocked && (
+        {result.companies[0]?.five_second_test && isUnlocked && (
           <>
-            <div className="rounded-lg border border-zinc-200 bg-white p-6">
-              <h3 className="text-lg font-semibold text-zinc-900 mb-4">
-                {t("results.map")}
-              </h3>
-              <PositioningMap
+            {result.companies[0]?.positioning_health && (
+              <PositioningHealthDetail
                 companies={result.companies}
-                axes={result.axes}
                 userCompanyUrl={result.user_company_url}
               />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="rounded-lg border border-zinc-200 bg-white p-6">
-                <InsightCards
-                  insights={result.insights}
-                  title={t("results.insights")}
-                />
-              </div>
-              <div className="rounded-lg border border-zinc-200 bg-white p-6">
-                <DifferentiationScore
-                  companies={result.companies}
-                  userCompanyUrl={result.user_company_url}
-                  title={t("results.score")}
-                  description={t("results.scoreDescription")}
-                />
-              </div>
-            </div>
+            )}
           </>
         )}
 
@@ -279,7 +246,6 @@ export default function ResultsPage() {
         <ContactCTA analysisId={result.id} />
       </main>
 
-      {/* Footer */}
       <footer className="border-t border-zinc-200 bg-white mt-20">
         <div className="mx-auto max-w-5xl px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-zinc-400">
           <p>

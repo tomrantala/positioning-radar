@@ -61,7 +61,20 @@ describe("PositioningHealthDetail", () => {
     ).toBeInTheDocument();
   });
 
-  it("displays all 6 element names", () => {
+  it("renders each element as a separate card", () => {
+    render(
+      <PositioningHealthDetail
+        companies={[makeCompany()]}
+        userCompanyUrl="https://test.com"
+      />
+    );
+
+    // Each element should have its own card with a heading
+    const cards = screen.getAllByTestId("health-element-card");
+    expect(cards).toHaveLength(6);
+  });
+
+  it("displays all 6 element names as card headings", () => {
     render(
       <PositioningHealthDetail
         companies={[makeCompany()]}
@@ -103,19 +116,9 @@ describe("PositioningHealthDetail", () => {
 
     expect(screen.getByText("Clear target audience")).toBeInTheDocument();
     expect(screen.getByText("Limited awareness")).toBeInTheDocument();
-  });
-
-  it("highlights user company with 'You' badge", () => {
-    render(
-      <PositioningHealthDetail
-        companies={[
-          makeCompany({ url: "https://user.com", name: "My Co" }),
-        ]}
-        userCompanyUrl="https://user.com"
-      />
-    );
-
-    expect(screen.getByText("You")).toBeInTheDocument();
+    expect(screen.getByText("Good value clarity")).toBeInTheDocument();
+    expect(screen.getByText("Category clear")).toBeInTheDocument();
+    expect(screen.getByText("Moderate uniqueness")).toBeInTheDocument();
   });
 
   it("skips companies without positioning_health data", () => {
@@ -129,6 +132,6 @@ describe("PositioningHealthDetail", () => {
       />
     );
 
-    expect(screen.queryByText("No Health")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("health-element-card")).not.toBeInTheDocument();
   });
 });

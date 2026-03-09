@@ -1,11 +1,11 @@
 {
   "meta": {
     "title": "Positioning Radar — Website Positioning Analysis",
-    "description": "Analyze your website's positioning against competitors. See where you stand and where there's room to differentiate."
+    "description": "Score your website's positioning across 6 key elements. See where you stand and where there's room to differentiate."
   },
   "hero": {
-    "title": "See where you stand in the competitive landscape",
-    "subtitle": "Enter your website URL. We'll find your competitors and show you an instant positioning map.",
+    "title": "Score your positioning across 6 key elements",
+    "subtitle": "Enter your URL — we'll analyze your website against competitors using the 6-element positioning model and show you exactly where you stand.",
     "cta": "Analyze positioning"
   },
   "form": {
@@ -41,7 +41,23 @@
     "scrapingProgress": "Fetching {current} of {total} websites...",
     "analyzing": "AI is analyzing positioning...",
     "generating": "Generating your positioning map...",
-    "patience": "This takes about 30–60 seconds",
+    "patience": "This takes about 1–2 minutes",
+    "step": "Step {current} of {total}",
+    "scraping.sub1": "Knocking on the front door...",
+    "scraping.sub2": "Reading between the lines...",
+    "scraping.sub3": "Decoding the messaging DNA...",
+    "analyzing.sub1": "Putting companies side by side...",
+    "analyzing.sub2": "Hunting for blind spots...",
+    "analyzing.sub3": "Measuring the uniqueness factor...",
+    "generating.sub1": "Brewing up your insights...",
+    "generating.sub2": "Connecting the dots...",
+    "generating.sub3": "Polishing the final report...",
+    "fact1": "83% of B2B buyers say positioning clarity directly affects their purchase decision.",
+    "fact2": "Companies with clear positioning grow 2x faster than competitors.",
+    "fact3": "The average website visitor decides in 5 seconds if a company is relevant.",
+    "fact4": "Only 22% of companies are satisfied with their positioning.",
+    "elapsed": "{seconds}s elapsed",
+    "estimatedRemaining": "About {seconds} seconds left",
     "emailPrompt": "Taking a while? We can email you the results.",
     "emailPlaceholder": "your@email.com",
     "emailSubmit": "Send results to email",
@@ -163,6 +179,26 @@
     "gateIncludes3": "Differentiation scores for all companies",
     "gateSubmit": "Unlock competitor view",
     "gatePrivacy": "We'll only use this to send you the analysis."
+  },
+  "reports": {
+    "title": "Positioning Reports",
+    "subtitle": "See how major brands position themselves — analyzed with our 6-element model.",
+    "viewReport": "View report",
+    "backToReports": "All reports",
+    "analyzeYours": "Analyze your own positioning",
+    "viewAll": "See all reports",
+    "crm": {
+      "title": "CRM Platforms",
+      "description": "How HubSpot, Salesforce, and Pipedrive position themselves in the crowded CRM market."
+    },
+    "design": {
+      "title": "Design Tools",
+      "description": "Figma vs Sketch vs Adobe XD — who wins the positioning game in design tools?"
+    },
+    "ecommerce": {
+      "title": "E-commerce Platforms",
+      "description": "Shopify, WooCommerce, and BigCommerce — positioning strategies in online retail."
+    }
   },
   "footer": {
     "poweredBy": "Positioning Radar by",

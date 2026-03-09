@@ -7,6 +7,7 @@ import UrlInput from "@/components/UrlInput";
 import LoadingState from "@/components/LoadingState";
 import { saveToHistory } from "@/lib/analysis-history";
 import AnalysisHistory from "@/components/AnalysisHistory";
+import { REPORTS } from "@/lib/reports-data";
 import { Link } from "@/i18n/navigation";
 
 export default function HomePage() {
@@ -19,8 +20,10 @@ export default function HomePage() {
   >("scraping");
   const [error, setError] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
+  const [loadingEmail, setLoadingEmail] = useState<string | null>(null);
 
   const handleLoadingEmail = async (email: string) => {
+    setLoadingEmail(email);
     try {
       await fetch("/api/subscribe", {
         method: "POST",
@@ -76,6 +79,20 @@ export default function HomePage() {
         createdAt: analysisResult.created_at || new Date().toISOString(),
         locale,
       });
+
+      // If user submitted email during loading, send results email
+      if (loadingEmail) {
+        fetch("/api/subscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: loadingEmail,
+            analysis_id: analysisResult.id,
+            source: "loading_results_ready",
+          }),
+        }).catch(() => {});
+      }
+
       // Navigate to the actual results page (single source of truth for results UI)
       router.push(`/results/${analysisResult.id}`);
     } catch (err) {
@@ -155,6 +172,58 @@ export default function HomePage() {
           {/* Previous analyses */}
           {!isLoading && <AnalysisHistory variant="full" />}
         </div>
+
+        {/* Reports section */}
+        {!isLoading && (
+          <div className="mt-16">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold text-zinc-900 mb-2">
+                {t("reports.title")}
+              </h3>
+              <p className="text-sm text-zinc-500 max-w-lg mx-auto">
+                {t("reports.subtitle")}
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {REPORTS.map((report) => (
+                <Link
+                  key={report.slug}
+                  href={`/reports/${report.slug}`}
+                  className="group rounded-lg border border-zinc-200 bg-white p-5 hover:border-red-300 hover:shadow-md transition-all"
+                >
+                  <div className="text-2xl mb-2">{report.emoji}</div>
+                  <h4 className="text-base font-semibold text-zinc-900 group-hover:text-red-600 transition-colors mb-1">
+                    {t(`reports.${report.titleKey}`)}
+                  </h4>
+                  <p className="text-sm text-zinc-500 mb-3 line-clamp-2">
+                    {t(`reports.${report.descriptionKey}`)}
+                  </p>
+                  <div className="flex flex-wrap gap-1 mb-3">
+                    {report.companies.map((company) => (
+                      <span
+                        key={company}
+                        className="text-xs bg-zinc-100 text-zinc-600 px-2 py-0.5 rounded-full"
+                      >
+                        {company}
+                      </span>
+                    ))}
+                  </div>
+                  <span className="text-sm text-red-600 font-medium group-hover:text-red-700">
+                    {t("reports.viewReport")} →
+                  </span>
+                </Link>
+              ))}
+            </div>
+            <div className="text-center mt-5">
+              <Link
+                href="/reports"
+                className="text-sm text-zinc-500 hover:text-red-600 font-medium transition-colors"
+              >
+                {t("reports.viewAll")} →
+              </Link>
+            </div>
+          </div>
+        )}
       </main>
 
       {/* Footer */}

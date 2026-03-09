@@ -1,11 +1,11 @@
 {
   "meta": {
     "title": "Positioning Radar — Verkkosivujen positiointianalyysi",
-    "description": "Analysoi verkkosivustosi positiointi suhteessa kilpailijoihin. Katso missä olet ja missä on tilaa erottua."
+    "description": "Pisteytä verkkosivustosi positiointi 6 avainelementin kautta. Katso missä olet ja missä on tilaa erottua."
   },
   "hero": {
-    "title": "Katso missä yrityksesi sijaitsee kilpailukentällä",
-    "subtitle": "Syötä verkkosivustosi URL. Etsimme kilpailijasi ja näytämme positiointikartan välittömästi.",
+    "title": "Pisteytä positiointisi 6 avainelementin kautta",
+    "subtitle": "Syötä URL — analysoimme verkkosivustosi kilpailijoihin nähden 6 elementin positiointimallin avulla ja näytämme missä olet.",
     "cta": "Analysoi positiointi"
   },
   "form": {
@@ -41,7 +41,23 @@
     "scrapingProgress": "Haetaan sivustoa {current}/{total}...",
     "analyzing": "Tekoäly analysoi positiointia...",
     "generating": "Luodaan positiointikarttaasi...",
-    "patience": "Tämä kestää noin 30–60 sekuntia",
+    "patience": "Tämä kestää noin 1–2 minuuttia",
+    "step": "Vaihe {current}/{total}",
+    "scraping.sub1": "Koputellaan sivuston ovelle...",
+    "scraping.sub2": "Luetaan rivien välistä...",
+    "scraping.sub3": "Puretaan viestinnän DNA:ta...",
+    "analyzing.sub1": "Laitetaan yritykset rinnakkain...",
+    "analyzing.sub2": "Etsitään sokeita pisteitä...",
+    "analyzing.sub3": "Mitataan erottuvuustekijää...",
+    "generating.sub1": "Haudutetaan havaintoja...",
+    "generating.sub2": "Yhdistetään pisteet toisiinsa...",
+    "generating.sub3": "Viimeistellään raporttia...",
+    "fact1": "83 % B2B-ostajista sanoo positioinnin selkeyden vaikuttavan suoraan ostopäätökseen.",
+    "fact2": "Selkeästi positioituneet yritykset kasvavat 2x nopeammin kuin kilpailijat.",
+    "fact3": "Keskimääräinen verkkosivukävijä päättää 5 sekunnissa, onko yritys relevantti.",
+    "fact4": "Vain 22 % yrityksistä on tyytyväisiä positiointiinsa.",
+    "elapsed": "{seconds} s kulunut",
+    "estimatedRemaining": "Noin {seconds} sekuntia jäljellä",
     "emailPrompt": "Kestääkö liian kauan? Voimme lähettää tulokset sähköpostiin.",
     "emailPlaceholder": "sinun@email.fi",
     "emailSubmit": "Lähetä tulokset sähköpostiin",
@@ -163,6 +179,26 @@
     "gateIncludes3": "Erottuvuuspisteet kaikille yrityksille",
     "gateSubmit": "Avaa kilpailijanäkymä",
     "gatePrivacy": "Käytämme sähköpostiasi vain analyysin lähettämiseen."
+  },
+  "reports": {
+    "title": "Positiointiraportit",
+    "subtitle": "Katso miten suuret brändit positioivat itsensä — analysoitu 6 elementin mallilla.",
+    "viewReport": "Katso raportti",
+    "backToReports": "Kaikki raportit",
+    "analyzeYours": "Analysoi oma positiointisi",
+    "viewAll": "Katso kaikki raportit",
+    "crm": {
+      "title": "CRM-alustat",
+      "description": "Miten HubSpot, Salesforce ja Pipedrive positioivat itsensä kilpaillulla CRM-markkinalla."
+    },
+    "design": {
+      "title": "Suunnittelutyökalut",
+      "description": "Figma vs Sketch vs Adobe XD — kuka voittaa positiointipelin suunnittelutyökaluissa?"
+    },
+    "ecommerce": {
+      "title": "Verkkokauppa-alustat",
+      "description": "Shopify, WooCommerce ja BigCommerce — positiointistrategiat verkkokaupassa."
+    }
   },
   "footer": {
     "poweredBy": "Positioning Radar by",

@@ -12,6 +12,13 @@ vi.mock("@/lib/rate-limit", () => ({
   applyRateLimit: () => null,
 }));
 
+const mockSendResultsEmail = vi.fn().mockResolvedValue(undefined);
+const mockSendLeadConfirmationEmail = vi.fn().mockResolvedValue(undefined);
+vi.mock("@/lib/email", () => ({
+  sendResultsEmail: (...args: unknown[]) => mockSendResultsEmail(...args),
+  sendLeadConfirmationEmail: (...args: unknown[]) => mockSendLeadConfirmationEmail(...args),
+}));
+
 import { POST } from "@/app/api/subscribe/route";
 import { NextRequest } from "next/server";
 
@@ -84,10 +91,58 @@ describe("POST /api/subscribe", () => {
     expect(res.status).toBe(400);
   });
 
-  it("returns 400 for missing analysis_id", async () => {
-    const res = await POST(makeRequest({ email: "test@example.com" }));
+  it("accepts null analysis_id for loading emails", async () => {
+    const res = await POST(makeRequest({
+      email: "test@example.com",
+      analysis_id: null,
+      source: "loading_email_results",
+    }));
+    const data = await res.json();
 
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(200);
+    expect(data.success).toBe(true);
+    expect(mockInsert).toHaveBeenCalledWith({
+      email: "test@example.com",
+      analysis_id: null,
+      source: "loading_email_results",
+    });
+  });
+
+  it("accepts missing analysis_id", async () => {
+    const res = await POST(makeRequest({
+      email: "test@example.com",
+      source: "loading_email_results",
+    }));
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data.success).toBe(true);
+  });
+
+  it("sends results email when analysis_id is present", async () => {
+    await POST(makeRequest({
+      email: "test@example.com",
+      analysis_id: "abc123",
+      source: "v3_competitor_unlock",
+    }));
+
+    expect(mockSendResultsEmail).toHaveBeenCalledWith({
+      to: "test@example.com",
+      analysisId: "abc123",
+    });
+  });
+
+  it("sends confirmation email when analysis_id is null (loading)", async () => {
+    await POST(makeRequest({
+      email: "test@example.com",
+      analysis_id: null,
+      source: "loading_email_results",
+    }));
+
+    expect(mockSendLeadConfirmationEmail).toHaveBeenCalledWith({
+      to: "test@example.com",
+    });
+    expect(mockSendResultsEmail).not.toHaveBeenCalled();
   });
 
   it("returns 500 when Supabase insert fails", async () => {

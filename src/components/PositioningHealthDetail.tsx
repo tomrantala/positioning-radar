@@ -17,10 +17,22 @@ const HEALTH_ELEMENTS = [
   "unique_value_propositions",
 ] as const;
 
-function getElementBarColor(score: number): string {
+function getScoreColor(score: number): string {
+  if (score >= 70) return "text-green-600";
+  if (score >= 50) return "text-yellow-600";
+  return "text-red-600";
+}
+
+function getBarColor(score: number): string {
   if (score >= 70) return "bg-green-500";
   if (score >= 50) return "bg-yellow-500";
   return "bg-red-500";
+}
+
+function getRingColor(score: number): string {
+  if (score >= 70) return "ring-green-200 bg-green-50";
+  if (score >= 50) return "ring-yellow-200 bg-yellow-50";
+  return "ring-red-200 bg-red-50";
 }
 
 export default function PositioningHealthDetail({
@@ -29,67 +41,48 @@ export default function PositioningHealthDetail({
 }: PositioningHealthDetailProps) {
   const t = useTranslations("healthDetail");
 
+  // Merge health data from all companies (for user-only view, there's just 1)
+  const userCompany = companies.find((c) => c.url === userCompanyUrl) || companies[0];
+  const health = userCompany?.positioning_health;
+  if (!health) return null;
+
   return (
     <div>
       <h3 className="text-lg font-semibold text-zinc-900 mb-1">{t("title")}</h3>
-      <p className="text-sm text-zinc-500 mb-4">{t("description")}</p>
-      <div className="space-y-4">
-        {companies.map((company) => {
-          const isUser = company.url === userCompanyUrl;
-          const health = company.positioning_health;
-          if (!health) return null;
+      <p className="text-sm text-zinc-500 mb-5">{t("description")}</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {HEALTH_ELEMENTS.map((element) => {
+          const data = health[element];
+          if (!data) return null;
 
           return (
             <div
-              key={company.url}
-              className={`rounded-lg border p-4 ${
-                isUser
-                  ? "border-red-200 bg-red-50"
-                  : "border-zinc-200 bg-white"
-              }`}
+              key={element}
+              data-testid="health-element-card"
+              className={`rounded-lg border border-zinc-200 p-4 ring-1 ${getRingColor(data.score)}`}
             >
-              <div className="flex items-center gap-2 mb-3">
-                <span
-                  className={`text-sm font-semibold ${
-                    isUser ? "text-red-700" : "text-zinc-800"
-                  }`}
-                >
-                  {company.name}
+              {/* Score + Label header */}
+              <div className="flex items-start justify-between mb-2">
+                <h4 className="text-sm font-semibold text-zinc-800">
+                  {t(element)}
+                </h4>
+                <span className={`text-xl font-bold tabular-nums ${getScoreColor(data.score)}`}>
+                  {data.score}
                 </span>
-                {isUser && (
-                  <span className="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded">
-                    {t("you")}
-                  </span>
-                )}
               </div>
-              <div className="space-y-2.5">
-                {HEALTH_ELEMENTS.map((element) => {
-                  const data = health[element];
-                  if (!data) return null;
 
-                  return (
-                    <div key={element}>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-medium text-zinc-600">
-                          {t(element)}
-                        </span>
-                        <span className="text-xs font-bold text-zinc-700">
-                          {data.score}
-                        </span>
-                      </div>
-                      <div className="w-full bg-zinc-100 rounded-full h-1.5">
-                        <div
-                          className={`h-1.5 rounded-full transition-all ${getElementBarColor(data.score)}`}
-                          style={{ width: `${data.score}%` }}
-                        />
-                      </div>
-                      <p className="text-xs text-zinc-500 mt-0.5">
-                        {data.summary}
-                      </p>
-                    </div>
-                  );
-                })}
+              {/* Progress bar */}
+              <div className="w-full bg-zinc-100 rounded-full h-2 mb-3">
+                <div
+                  className={`h-2 rounded-full transition-all ${getBarColor(data.score)}`}
+                  style={{ width: `${data.score}%` }}
+                />
               </div>
+
+              {/* Summary */}
+              <p className="text-xs text-zinc-600 leading-relaxed">
+                {data.summary}
+              </p>
             </div>
           );
         })}
