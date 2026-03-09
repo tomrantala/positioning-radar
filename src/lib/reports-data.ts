@@ -76,6 +76,9 @@ const REPORT_DATA: Record<string, PositioningResult> = {
           unique_value_propositions: { score: 74, summary: "Strong but could differentiate more sharply from Salesforce's ecosystem play." },
         },
         five_second_test: {
+          result: "pass",
+          what_visitor_understands: "CRM and marketing platform for growing businesses",
+          what_is_unclear: "Specific pricing and feature differences between tiers",
           clarity_score: 8,
           first_impression: "Modern, friendly business platform",
           identified_offering: "CRM and marketing platform",
@@ -108,6 +111,9 @@ const REPORT_DATA: Record<string, PositioningResult> = {
           unique_value_propositions: { score: 62, summary: "Scale and ecosystem are real differentiators but not articulated compellingly enough for newcomers." },
         },
         five_second_test: {
+          result: "partial",
+          what_visitor_understands: "Enterprise CRM with AI capabilities",
+          what_is_unclear: "What specifically differentiates from other enterprise CRMs",
           clarity_score: 6,
           first_impression: "Big enterprise tech company",
           identified_offering: "CRM software",
@@ -116,8 +122,8 @@ const REPORT_DATA: Record<string, PositioningResult> = {
         },
         red_flags: ["buzzword_overload", "generic_terminology"],
         red_flag_details: [
-          { flag: "buzzword_overload", severity: "medium", explanation: "'#1 AI CRM' and 'whole new way' rely on buzz rather than substance.", suggestion: "Show specific AI capabilities with concrete outcomes." },
-          { flag: "generic_terminology", severity: "low", explanation: "'Connect with customers' is used by virtually every CRM provider.", suggestion: "Replace with Salesforce-specific language about what the connection enables." },
+          { type: "buzzword_overload", severity: "medium", example: "'#1 AI CRM' and 'whole new way' rely on buzz rather than substance.", suggestion: "Show specific AI capabilities with concrete outcomes." },
+          { type: "generic_terminology", severity: "low", example: "'Connect with customers' is used by virtually every CRM provider.", suggestion: "Replace with Salesforce-specific language about what the connection enables." },
         ],
       },
       {
@@ -143,6 +149,9 @@ const REPORT_DATA: Record<string, PositioningResult> = {
           unique_value_propositions: { score: 72, summary: "Strong niche positioning but could articulate why pipeline-centric approach delivers better results." },
         },
         five_second_test: {
+          result: "pass",
+          what_visitor_understands: "Sales CRM built by salespeople for sales teams",
+          what_is_unclear: "Very little — positioning is exceptionally clear",
           clarity_score: 9,
           first_impression: "Simple, sales-focused tool",
           identified_offering: "Sales CRM",
@@ -197,6 +206,9 @@ const REPORT_DATA: Record<string, PositioningResult> = {
           unique_value_propositions: { score: 80, summary: "Strong but post-Adobe acquisition, the independent challenger narrative needs updating." },
         },
         five_second_test: {
+          result: "pass",
+          what_visitor_understands: "Collaborative design platform for teams",
+          what_is_unclear: "Specific pricing and enterprise vs free tier differences",
           clarity_score: 9,
           first_impression: "Modern, collaborative design platform",
           identified_offering: "Design tool for teams",
@@ -229,6 +241,9 @@ const REPORT_DATA: Record<string, PositioningResult> = {
           unique_value_propositions: { score: 50, summary: "Struggling to articulate why Sketch in 2026 when browsers do everything." },
         },
         five_second_test: {
+          result: "partial",
+          what_visitor_understands: "Design tool for Mac professionals",
+          what_is_unclear: "Why choose Sketch over browser-based alternatives",
           clarity_score: 6,
           first_impression: "Traditional design software",
           identified_offering: "Design tool for Mac",
@@ -237,7 +252,7 @@ const REPORT_DATA: Record<string, PositioningResult> = {
         },
         red_flags: ["interchangeable_messaging"],
         red_flag_details: [
-          { flag: "interchangeable_messaging", severity: "medium", explanation: "'Design, prototype, collaborate' could describe any modern design tool.", suggestion: "Lead with what makes Sketch's Mac-native experience genuinely better, not just different." },
+          { type: "interchangeable_messaging", severity: "medium", example: "'Design, prototype, collaborate' could describe any modern design tool.", suggestion: "Lead with what makes Sketch's Mac-native experience genuinely better, not just different." },
         ],
       },
       {
@@ -263,6 +278,9 @@ const REPORT_DATA: Record<string, PositioningResult> = {
           unique_value_propositions: { score: 50, summary: "No clear value proposition beyond being the Adobe option." },
         },
         five_second_test: {
+          result: "fail",
+          what_visitor_understands: "Adobe's UI design tool",
+          what_is_unclear: "Why use XD over Figma or other design tools",
           clarity_score: 5,
           first_impression: "Another Adobe product",
           identified_offering: "UI design tool",
@@ -271,8 +289,8 @@ const REPORT_DATA: Record<string, PositioningResult> = {
         },
         red_flags: ["generic_terminology", "self_focused_language"],
         red_flag_details: [
-          { flag: "generic_terminology", severity: "high", explanation: "'Fast & powerful' and 'design, prototype, share' describe every design tool on the market.", suggestion: "Identify what's genuinely unique about XD's approach — perhaps deep Photoshop/Illustrator integration for designers who use the full Creative Cloud." },
-          { flag: "self_focused_language", severity: "medium", explanation: "Positioning focuses on Adobe's ecosystem benefits rather than user outcomes.", suggestion: "Shift to 'what designers can achieve' rather than 'what Adobe offers.'" },
+          { type: "generic_terminology", severity: "high", example: "'Fast & powerful' and 'design, prototype, share' describe every design tool on the market.", suggestion: "Identify what's genuinely unique about XD's approach — perhaps deep Photoshop/Illustrator integration for designers who use the full Creative Cloud." },
+          { type: "self_focused_language", severity: "medium", example: "Positioning focuses on Adobe's ecosystem benefits rather than user outcomes.", suggestion: "Shift to 'what designers can achieve' rather than 'what Adobe offers.'" },
         ],
       },
     ],
@@ -320,6 +338,9 @@ const REPORT_DATA: Record<string, PositioningResult> = {
           unique_value_propositions: { score: 68, summary: "Scale from $0 to $1B+ on one platform is compelling but not always articulated clearly." },
         },
         five_second_test: {
+          result: "pass",
+          what_visitor_understands: "Easy e-commerce platform for entrepreneurs",
+          what_is_unclear: "Technical capabilities for larger businesses",
           clarity_score: 8,
           first_impression: "Friendly online store builder",
           identified_offering: "E-commerce platform",
@@ -352,6 +373,9 @@ const REPORT_DATA: Record<string, PositioningResult> = {
           unique_value_propositions: { score: 58, summary: "Freedom and control are strong values but need to be balanced with ease-of-use proof points." },
         },
         five_second_test: {
+          result: "partial",
+          what_visitor_understands: "E-commerce solution for WordPress",
+          what_is_unclear: "Total cost of ownership and hosting requirements",
           clarity_score: 7,
           first_impression: "WordPress e-commerce plugin",
           identified_offering: "Online store for WordPress",
@@ -384,6 +408,9 @@ const REPORT_DATA: Record<string, PositioningResult> = {
           unique_value_propositions: { score: 52, summary: "The middle ground between Shopify and WooCommerce is clear strategically but harder to communicate viscerally." },
         },
         five_second_test: {
+          result: "partial",
+          what_visitor_understands: "E-commerce platform for mid-market businesses",
+          what_is_unclear: "What 'open SaaS' means concretely",
           clarity_score: 6,
           first_impression: "Business e-commerce solution",
           identified_offering: "E-commerce platform",
@@ -392,7 +419,7 @@ const REPORT_DATA: Record<string, PositioningResult> = {
         },
         red_flags: ["generic_terminology"],
         red_flag_details: [
-          { flag: "generic_terminology", severity: "medium", explanation: "'Built for growth, built for you' is generic and could apply to any platform.", suggestion: "Lean harder into the 'open SaaS' differentiator — it's unique. Make it the headline, not the tagline." },
+          { type: "generic_terminology", severity: "medium", example: "'Built for growth, built for you' is generic and could apply to any platform.", suggestion: "Lean harder into the 'open SaaS' differentiator — it's unique. Make it the headline, not the tagline." },
         ],
       },
     ],
