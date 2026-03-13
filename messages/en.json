@@ -34,7 +34,16 @@
     "minCompetitors": "Select at least 2 competitors",
     "maxCompetitors": "Maximum 5 competitors",
     "invalidUrl": "Please enter a valid URL",
-    "competitorDiscoveryFailed": "Couldn't find competitors automatically. Try again or enter them manually."
+    "competitorDiscoveryFailed": "Couldn't find competitors automatically. Try again or enter them manually.",
+    "market": "Market (optional)",
+    "marketHint": "Leave empty for automatic detection",
+    "marketAuto": "Automatic",
+    "marketFinland": "Finland",
+    "marketGlobal": "Global",
+    "marketUS": "United States",
+    "marketEU": "Europe",
+    "marketNordics": "Nordics",
+    "marketCustom": "Custom..."
   },
   "loading": {
     "scraping": "Fetching website content...",

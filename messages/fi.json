@@ -34,7 +34,16 @@
     "minCompetitors": "Valitse vähintään 2 kilpailijaa",
     "maxCompetitors": "Enintään 5 kilpailijaa",
     "invalidUrl": "Syötä kelvollinen URL",
-    "competitorDiscoveryFailed": "Kilpailijoiden automaattinen haku ei onnistunut. Yritä uudelleen tai syötä ne manuaalisesti."
+    "competitorDiscoveryFailed": "Kilpailijoiden automaattinen haku ei onnistunut. Yritä uudelleen tai syötä ne manuaalisesti.",
+    "market": "Markkina (valinnainen)",
+    "marketHint": "Jätä tyhjäksi niin tekoäly päättelee automaattisesti",
+    "marketAuto": "Automaattinen",
+    "marketFinland": "Suomi",
+    "marketGlobal": "Globaali",
+    "marketUS": "Yhdysvallat",
+    "marketEU": "Eurooppa",
+    "marketNordics": "Pohjoismaat",
+    "marketCustom": "Muu..."
   },
   "loading": {
     "scraping": "Haetaan verkkosivujen sisältöä...",

@@ -66,7 +66,7 @@ describe("POST /api/competitors", () => {
 
     await POST(makeRequest({ url: "https://example.com", locale: "fi" }));
 
-    expect(mockFindCompetitors).toHaveBeenCalledWith("https://example.com", "fi");
+    expect(mockFindCompetitors).toHaveBeenCalledWith("https://example.com", "fi", undefined);
   });
 
   it("defaults locale to en", async () => {
@@ -74,7 +74,15 @@ describe("POST /api/competitors", () => {
 
     await POST(makeRequest({ url: "https://example.com" }));
 
-    expect(mockFindCompetitors).toHaveBeenCalledWith("https://example.com", "en");
+    expect(mockFindCompetitors).toHaveBeenCalledWith("https://example.com", "en", undefined);
+  });
+
+  it("passes market to findCompetitors", async () => {
+    mockFindCompetitors.mockResolvedValueOnce(mockResult);
+
+    await POST(makeRequest({ url: "https://example.com", market: "US" }));
+
+    expect(mockFindCompetitors).toHaveBeenCalledWith("https://example.com", "en", "US");
   });
 
   it("returns 500 when findCompetitors throws", async () => {

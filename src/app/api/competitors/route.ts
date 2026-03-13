@@ -6,6 +6,7 @@ import { competitorLimiter, applyRateLimit } from "@/lib/rate-limit";
 const schema = z.object({
   url: z.url(),
   locale: z.string().optional(),
+  market: z.string().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -26,10 +27,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log("[API_COMPETITORS] Finding competitors for:", parsed.data.url);
+    console.log("[API_COMPETITORS] Finding competitors for:", parsed.data.url, parsed.data.market ? `(market: ${parsed.data.market})` : "");
     const result = await findCompetitors(
       parsed.data.url,
-      parsed.data.locale || "en"
+      parsed.data.locale || "en",
+      parsed.data.market
     );
 
     console.log("[API_COMPETITORS] Successfully returned", result.competitors.length, "competitors");

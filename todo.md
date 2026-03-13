@@ -55,6 +55,13 @@
 - ✅ Analyses table, Leads table — filterable, paginated, CSV export
 - ✅ Cost estimator (Firecrawl + Claude + Tavily per analysis)
 
+### Competitor Detection Improvements
+- ✅ Claude-first competitor detection (1 API call instead of 3 for known companies)
+- ✅ Parallel background scrape for cache warming (used later in positioning analysis)
+- ✅ Fallback to scrape+Tavily for unknown/new companies (confidence-based)
+- ✅ Market selector dropdown (Finland, Global, US, EU, Nordics, Custom)
+- ✅ Market parameter flows through API → competitor-finder → Claude prompt
+
 ### Bug Fixes
 - ✅ Competitor discovery: rasol.fi returning "Web development" → fixed
 - ✅ ANTHROPIC_API_KEY env var conflict → POSITIONING_RADAR_ANTHROPIC_KEY fallback

@@ -42,6 +42,10 @@ export class ResponseCache<T> {
     });
   }
 
+  clear(): void {
+    this.store.clear();
+  }
+
   /**
    * Wraps an async function with caching. Returns a function that
    * checks cache first and only calls the original on cache miss.

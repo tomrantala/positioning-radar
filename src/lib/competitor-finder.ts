@@ -14,6 +14,14 @@ export interface CompetitorFinderResult {
   competitors: CompetitorSuggestion[];
 }
 
+interface ClaudeFirstResult {
+  confidence: "high" | "low";
+  company_name: string;
+  industry: string;
+  country: string;
+  competitors: CompetitorSuggestion[];
+}
+
 function getAnthropicClient() {
   const apiKey = (process.env.POSITIONING_RADAR_ANTHROPIC_KEY || process.env.ANTHROPIC_API_KEY)?.trim();
   if (!apiKey) {
@@ -22,28 +30,86 @@ function getAnthropicClient() {
   return new Anthropic({ apiKey });
 }
 
-export async function findCompetitors(
+function parseJsonResponse(text: string): unknown {
+  let json = text.trim();
+  const jsonMatch = json.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (jsonMatch) json = jsonMatch[1].trim();
+  return JSON.parse(json);
+}
+
+/**
+ * Claude-first competitor detection: ask Claude to identify company + competitors
+ * based solely on the URL (no scraping needed).
+ */
+async function askClaudeForCompetitors(
   userUrl: string,
-  locale: string = "en"
-): Promise<CompetitorFinderResult> {
-  // Check cache first (key by URL + locale)
-  const cacheKey = `${userUrl}::${locale}`;
-  const cached = competitorCache.get(cacheKey) as CompetitorFinderResult | undefined;
-  if (cached) {
-    console.log("[COMPETITOR_FINDER] Cache hit:", userUrl);
-    return cached;
+  locale: string,
+  market?: string
+): Promise<ClaudeFirstResult> {
+  const anthropic = getAnthropicClient();
+  const lang = locale === "fi" ? "Finnish" : "English";
+
+  const response = await anthropic.messages.create({
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 2048,
+    messages: [
+      {
+        role: "user",
+        content: `Analyze this company based on its URL: ${userUrl}
+${market ? `Focus on the ${market} market.` : ""}
+
+Return:
+1. Company name
+2. Industry/vertical (be specific, e.g. "WordPress hosting" not just "technology")
+3. Country/market
+4. 5 direct competitors with their website URLs
+
+Rules:
+- Competitors must be real companies with real, working URLs
+${market ? `- Focus on competitors in the ${market} market` : "- Prefer same country/market competitors"}
+- Only include companies you are confident about
+- If you don't recognize this company from the URL, set "confidence": "low"
+- Respond in ${lang}
+
+Respond in JSON only:
+{
+  "confidence": "high" | "low",
+  "company_name": "string",
+  "industry": "string — the actual industry they operate in",
+  "country": "string — the country/market",
+  "competitors": [
+    { "name": "Company Name", "url": "https://...", "description": "Brief description" }
+  ]
+}`,
+      },
+    ],
+  });
+
+  const textBlock = response.content.find((b) => b.type === "text");
+  if (!textBlock || textBlock.type !== "text") {
+    throw new Error("Failed to identify company");
   }
 
-  console.log("[COMPETITOR_FINDER] Starting for:", userUrl);
+  return parseJsonResponse(textBlock.text) as ClaudeFirstResult;
+}
 
-  // Step 1: Scrape the user's homepage to understand what they do
+/**
+ * Fallback: legacy flow using scraped content + Tavily search.
+ * Used when Claude-first returns low confidence.
+ */
+async function findCompetitorsFallback(
+  userUrl: string,
+  locale: string,
+  market?: string
+): Promise<CompetitorFinderResult> {
   const { scrapePage } = await import("./scraper");
   const userPage = await scrapePage(userUrl);
 
-  console.log("[SCRAPER] Title:", userPage.title, "| Content:", userPage.content.length, "chars");
+  console.log("[FALLBACK_SCRAPER] Title:", userPage.title, "| Content:", userPage.content.length, "chars");
 
-  // Step 2: Ask Claude to identify the company, industry, and search query
   const anthropic = getAnthropicClient();
+
+  // Step 1: Identify company from scraped content
   const identifyResponse = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
     max_tokens: 1024,
@@ -63,6 +129,7 @@ CRITICAL INSTRUCTIONS:
 - The industry must match what the company ACTUALLY DOES, not what tools they use
 - For pages in Finnish or other languages, read carefully to understand the business
 - Search query should target companies in the SAME industry, not web developers unless that's the actual business
+${market ? `- Focus the search query on the ${market} market` : ""}
 
 Website: ${userUrl}
 Title: ${userPage.title}
@@ -87,26 +154,28 @@ Respond in JSON only:
     throw new Error("Failed to identify company");
   }
 
-  let identifyJson = textBlock.text.trim();
-  const jsonMatch = identifyJson.match(/```(?:json)?\s*([\s\S]*?)```/);
-  if (jsonMatch) identifyJson = jsonMatch[1].trim();
-  const identified = JSON.parse(identifyJson);
+  const identified = parseJsonResponse(textBlock.text) as {
+    company_name: string;
+    industry: string;
+    search_query: string;
+    country: string;
+  };
 
-  console.log("[CLAUDE_IDENTIFY]", identified.company_name, "|", identified.industry, "|", identified.country);
+  console.log("[FALLBACK_IDENTIFY]", identified.company_name, "|", identified.industry, "|", identified.country);
 
-  // Step 3: Search for competitors using Tavily
+  // Step 2: Search for competitors using Tavily
   const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY?.trim() || "" });
 
-  console.log("[TAVILY] Searching:", identified.search_query);
+  console.log("[FALLBACK_TAVILY] Searching:", identified.search_query);
   const searchResult = await tvly.search(identified.search_query, {
     maxResults: 10,
     searchDepth: "advanced",
     includeAnswer: false,
   });
 
-  console.log("[TAVILY]", searchResult.results.length, "results found");
+  console.log("[FALLBACK_TAVILY]", searchResult.results.length, "results found");
 
-  // Step 4: Ask Claude to filter and rank the best competitors
+  // Step 3: Filter and rank competitors
   const lang = locale === "fi" ? "Finnish" : "English";
   const filterResponse = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
@@ -150,21 +219,62 @@ Respond in ${lang}. Return JSON only:
     throw new Error("Failed to filter competitors");
   }
 
-  let filterJson = filterBlock.text.trim();
-  const filterMatch = filterJson.match(/```(?:json)?\s*([\s\S]*?)```/);
-  if (filterMatch) filterJson = filterMatch[1].trim();
-  const filtered = JSON.parse(filterJson);
+  const filtered = parseJsonResponse(filterBlock.text) as {
+    competitors: CompetitorSuggestion[];
+  };
 
-  console.log("[CLAUDE_FILTER]", filtered.competitors.slice(0, 5).map((c: CompetitorSuggestion) => c.name).join(", "));
+  console.log("[FALLBACK_FILTER]", filtered.competitors.slice(0, 5).map((c) => c.name).join(", "));
 
-  const result: CompetitorFinderResult = {
+  return {
     detected_industry: identified.industry,
     company_name: identified.company_name,
     competitors: filtered.competitors.slice(0, 5),
   };
+}
 
-  // Cache the result
+export async function findCompetitors(
+  userUrl: string,
+  locale: string = "en",
+  market?: string
+): Promise<CompetitorFinderResult> {
+  // Check cache first (key by URL + locale + market)
+  const cacheKey = `${userUrl}::${locale}::${market || ""}`;
+  const cached = competitorCache.get(cacheKey) as CompetitorFinderResult | undefined;
+  if (cached) {
+    console.log("[COMPETITOR_FINDER] Cache hit:", userUrl);
+    return cached;
+  }
+
+  console.log("[COMPETITOR_FINDER] Starting Claude-first for:", userUrl, market ? `(market: ${market})` : "");
+
+  // Run Claude-first and background scrape in parallel
+  const { scrapePage } = await import("./scraper");
+  const [claudeResult] = await Promise.all([
+    askClaudeForCompetitors(userUrl, locale, market),
+    // Warm the scrape cache for later analyze step (fire-and-forget)
+    scrapePage(userUrl).catch((err) => {
+      console.log("[COMPETITOR_FINDER] Background scrape failed (non-blocking):", err.message);
+      return null;
+    }),
+  ]);
+
+  // If Claude is confident, use the fast path
+  if (claudeResult.confidence === "high") {
+    console.log("[COMPETITOR_FINDER] Claude-first HIGH confidence:", claudeResult.company_name, "|", claudeResult.industry);
+
+    const result: CompetitorFinderResult = {
+      detected_industry: claudeResult.industry,
+      company_name: claudeResult.company_name,
+      competitors: claudeResult.competitors.slice(0, 5),
+    };
+
+    competitorCache.set(cacheKey, result);
+    return result;
+  }
+
+  // Low confidence: fall back to scrape + Tavily flow
+  console.log("[COMPETITOR_FINDER] Claude-first LOW confidence, falling back to scrape+Tavily");
+  const result = await findCompetitorsFallback(userUrl, locale, market);
   competitorCache.set(cacheKey, result);
-
   return result;
 }
