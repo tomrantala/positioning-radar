@@ -42,6 +42,8 @@ export default function UrlInput({ onSubmit, isLoading }: UrlInputProps) {
   const [step, setStep] = useState<Step>("url");
   const [userUrl, setUserUrl] = useState("");
   const [industry, setIndustry] = useState("");
+  const [market, setMarket] = useState("");
+  const [customMarket, setCustomMarket] = useState("");
   const [detectedIndustry, setDetectedIndustry] = useState("");
   const [companyName, setCompanyName] = useState("");
 
@@ -70,10 +72,15 @@ export default function UrlInput({ onSubmit, isLoading }: UrlInputProps) {
     setIsFinding(true);
 
     try {
+      const effectiveMarket = market === "custom" ? customMarket.trim() : market;
       const response = await fetch("/api/competitors", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: normalizeUrl(userUrl), locale }),
+        body: JSON.stringify({
+          url: normalizeUrl(userUrl),
+          locale,
+          ...(effectiveMarket && { market: effectiveMarket }),
+        }),
       });
 
       if (!response.ok) throw new Error("Failed to find competitors");
@@ -237,6 +244,38 @@ export default function UrlInput({ onSubmit, isLoading }: UrlInputProps) {
           {errors.userUrl && (
             <p className="mt-1 text-sm text-red-500">{errors.userUrl}</p>
           )}
+        </div>
+
+        {/* Market selector */}
+        <div>
+          <label className="block text-sm font-medium text-zinc-700 mb-1.5">
+            {t("market")}
+          </label>
+          <select
+            value={market}
+            onChange={(e) => setMarket(e.target.value)}
+            className="w-full rounded-lg border border-zinc-300 px-4 py-3 text-zinc-900 bg-white focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none"
+            disabled={isFinding}
+          >
+            <option value="">{t("marketAuto")}</option>
+            <option value="Finland">{t("marketFinland")}</option>
+            <option value="Global">{t("marketGlobal")}</option>
+            <option value="US">{t("marketUS")}</option>
+            <option value="EU">{t("marketEU")}</option>
+            <option value="Nordics">{t("marketNordics")}</option>
+            <option value="custom">{t("marketCustom")}</option>
+          </select>
+          {market === "custom" && (
+            <input
+              type="text"
+              value={customMarket}
+              onChange={(e) => setCustomMarket(e.target.value)}
+              placeholder="e.g. Japan, Southeast Asia..."
+              className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 text-zinc-900 placeholder:text-zinc-400 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none"
+              disabled={isFinding}
+            />
+          )}
+          <p className="mt-1 text-xs text-zinc-400">{t("marketHint")}</p>
         </div>
 
         <button
