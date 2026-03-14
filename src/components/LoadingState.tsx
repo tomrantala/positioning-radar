@@ -77,7 +77,7 @@ export default function LoadingState({
   };
 
   // Sub-message for current stage
-  const subKeys = [`${stage}.sub1`, `${stage}.sub2`, `${stage}.sub3`];
+  const subKeys = [`${stage}_sub1`, `${stage}_sub2`, `${stage}_sub3`];
   const currentSubMessage = t(subKeys[subMessageIndex]);
 
   // Fact keys
