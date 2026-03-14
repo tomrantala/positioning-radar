@@ -40,9 +40,8 @@ describe("findCompetitors", () => {
     vi.stubEnv("POSITIONING_RADAR_ANTHROPIC_KEY", "test-anthropic-key");
   });
 
-  // Claude-first response (high confidence)
-  const claudeFirstResult = {
-    confidence: "high",
+  // Web search response — Claude returns competitors after searching the web
+  const webSearchResult = {
     company_name: "User Co",
     industry: "WordPress development",
     country: "Finland",
@@ -60,16 +59,7 @@ describe("findCompetitors", () => {
     ],
   };
 
-  // Claude-first response (low confidence — triggers fallback)
-  const claudeFirstLowConfidence = {
-    confidence: "low",
-    company_name: "Unknown Co",
-    industry: "Unknown",
-    country: "Unknown",
-    competitors: [],
-  };
-
-  // Legacy flow data (used by fallback)
+  // Fallback flow data (used when web search fails)
   const identifyResult = {
     company_name: "User Co",
     industry: "WordPress development",
@@ -92,23 +82,22 @@ describe("findCompetitors", () => {
     ],
   };
 
-  function setupClaudeFirstMocks(result = claudeFirstResult) {
-    // Single Claude call for Claude-first path
+  function setupWebSearchMocks(result = webSearchResult) {
+    // Claude call with web_search tool — response includes search results + text
     mockCreate.mockResolvedValueOnce({
-      content: [{ type: "text", text: JSON.stringify(result) }],
+      content: [
+        { type: "server_tool_use", id: "srvtoolu_1", name: "web_search", input: { query: "User Co competitors Finland" } },
+        { type: "web_search_tool_result", tool_use_id: "srvtoolu_1", content: [
+          { type: "web_search_result", url: "https://example.com/article", title: "Top WordPress agencies Finland", encrypted_content: "..." }
+        ]},
+        { type: "text", text: JSON.stringify(result) },
+      ],
     });
   }
 
   function setupFallbackMocks() {
-    // Claude-first returns low confidence
-    mockCreate.mockResolvedValueOnce({
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(claudeFirstLowConfidence),
-        },
-      ],
-    });
+    // Web search call fails
+    mockCreate.mockRejectedValueOnce(new Error("Web search failed"));
 
     // Fallback: identify from scraped content
     mockCreate.mockResolvedValueOnce({
@@ -129,9 +118,35 @@ describe("findCompetitors", () => {
     });
   }
 
-  describe("Claude-first path (high confidence)", () => {
+  describe("Web search path", () => {
+    it("passes web_search tool to Claude API call", async () => {
+      setupWebSearchMocks();
+
+      await findCompetitors("https://user.com");
+
+      const call = mockCreate.mock.calls[0][0];
+      expect(call.tools).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            type: "web_search_20250305",
+            name: "web_search",
+          }),
+        ])
+      );
+    });
+
+    it("sets max_uses on web_search tool", async () => {
+      setupWebSearchMocks();
+
+      await findCompetitors("https://user.com");
+
+      const call = mockCreate.mock.calls[0][0];
+      const webSearchTool = call.tools.find((t: { name: string }) => t.name === "web_search");
+      expect(webSearchTool.max_uses).toBe(3);
+    });
+
     it("returns detected industry and company name", async () => {
-      setupClaudeFirstMocks();
+      setupWebSearchMocks();
 
       const result = await findCompetitors("https://user.com");
 
@@ -140,7 +155,7 @@ describe("findCompetitors", () => {
     });
 
     it("returns competitor suggestions", async () => {
-      setupClaudeFirstMocks();
+      setupWebSearchMocks();
 
       const result = await findCompetitors("https://user.com");
 
@@ -153,7 +168,7 @@ describe("findCompetitors", () => {
     });
 
     it("uses only one Claude call (no Tavily)", async () => {
-      setupClaudeFirstMocks();
+      setupWebSearchMocks();
 
       await findCompetitors("https://user.com");
 
@@ -162,7 +177,7 @@ describe("findCompetitors", () => {
     });
 
     it("starts scrape in parallel for cache warming", async () => {
-      setupClaudeFirstMocks();
+      setupWebSearchMocks();
 
       await findCompetitors("https://user.com");
 
@@ -171,18 +186,25 @@ describe("findCompetitors", () => {
 
     it("limits competitors to 5", async () => {
       const manyCompetitors = {
-        ...claudeFirstResult,
+        ...webSearchResult,
         competitors: Array.from({ length: 8 }, (_, i) => ({
           name: `Competitor ${i}`,
           url: `https://comp-${i}.com`,
           description: `Desc ${i}`,
         })),
       };
-      setupClaudeFirstMocks(manyCompetitors);
+      setupWebSearchMocks(manyCompetitors);
 
       const result = await findCompetitors("https://user.com");
 
       expect(result.competitors.length).toBeLessThanOrEqual(5);
+    });
+
+    it("extracts JSON from response with mixed content blocks", async () => {
+      setupWebSearchMocks();
+
+      const result = await findCompetitors("https://user.com");
+      expect(result.company_name).toBe("User Co");
     });
 
     it("handles JSON in code blocks from Claude", async () => {
@@ -191,7 +213,7 @@ describe("findCompetitors", () => {
           {
             type: "text",
             text:
-              "```json\n" + JSON.stringify(claudeFirstResult) + "\n```",
+              "```json\n" + JSON.stringify(webSearchResult) + "\n```",
           },
         ],
       });
@@ -201,26 +223,38 @@ describe("findCompetitors", () => {
     });
 
     it("passes market to Claude prompt", async () => {
-      setupClaudeFirstMocks();
+      setupWebSearchMocks();
 
       await findCompetitors("https://user.com", "en", "US");
 
-      const call = mockCreate.mock.calls[0];
-      expect(call[0].messages[0].content).toContain("US");
+      const call = mockCreate.mock.calls[0][0];
+      expect(call.messages[0].content).toContain("US");
+    });
+
+    it("sets user_location for Finland market", async () => {
+      setupWebSearchMocks();
+
+      await findCompetitors("https://user.com", "en", "finland");
+
+      const call = mockCreate.mock.calls[0][0];
+      const webSearchTool = call.tools.find((t: { name: string }) => t.name === "web_search");
+      expect(webSearchTool.user_location).toEqual(
+        expect.objectContaining({ country: "FI" })
+      );
     });
 
     it("passes locale for response language", async () => {
-      setupClaudeFirstMocks();
+      setupWebSearchMocks();
 
       await findCompetitors("https://user.com", "fi");
 
-      const call = mockCreate.mock.calls[0];
-      expect(call[0].messages[0].content).toContain("Finnish");
+      const call = mockCreate.mock.calls[0][0];
+      expect(call.messages[0].content).toContain("Finnish");
     });
   });
 
-  describe("Fallback path (low confidence)", () => {
-    it("falls back to scrape+Tavily when confidence is low", async () => {
+  describe("Fallback path (web search fails)", () => {
+    it("falls back to scrape+Tavily when web search fails", async () => {
       setupFallbackMocks();
 
       const result = await findCompetitors("https://user.com");
@@ -236,35 +270,49 @@ describe("findCompetitors", () => {
       await findCompetitors("https://user.com");
 
       expect(mockSearch).toHaveBeenCalled();
-      // Claude-first + identify + filter = 3 calls
+      // Failed web search + identify + filter = 3 calls total
       expect(mockCreate).toHaveBeenCalledTimes(3);
     });
 
-    it("scrapes page in parallel so it is cached for fallback", async () => {
+    it("scrapes page for fallback", async () => {
       setupFallbackMocks();
 
       await findCompetitors("https://user.com");
 
-      // scrapePage is called in parallel with Claude-first, and again in fallback.
-      // In production the second call is a cache hit (scrapeCache in scraper.ts).
-      // Here we verify the URL is consistent across both calls.
       expect(mockScrapePage).toHaveBeenCalledWith("https://user.com");
     });
   });
 
   describe("Error handling", () => {
-    it("throws when Claude returns no text", async () => {
+    it("falls back to Tavily when Claude returns no text", async () => {
+      // Web search returns empty content → error → fallback
       mockCreate.mockResolvedValueOnce({
         content: [],
       });
 
-      await expect(findCompetitors("https://user.com")).rejects.toThrow(
-        "Failed to identify company"
-      );
+      // Fallback: identify from scraped content
+      mockCreate.mockResolvedValueOnce({
+        content: [{ type: "text", text: JSON.stringify(identifyResult) }],
+      });
+
+      // Tavily search
+      mockSearch.mockResolvedValueOnce({
+        results: [
+          { title: "Comp A", url: "https://comp-a.com", content: "WordPress" },
+        ],
+      });
+
+      // Filter competitors
+      mockCreate.mockResolvedValueOnce({
+        content: [{ type: "text", text: JSON.stringify(filterResult) }],
+      });
+
+      const result = await findCompetitors("https://user.com");
+      expect(result.company_name).toBe("User Co");
     });
 
     it("succeeds even if background scrape fails", async () => {
-      setupClaudeFirstMocks();
+      setupWebSearchMocks();
       mockScrapePage.mockRejectedValueOnce(new Error("Scrape failed"));
 
       const result = await findCompetitors("https://user.com");
