@@ -40,7 +40,7 @@ function getWebSearchTool(market?: string) {
   const tool: Record<string, unknown> = {
     type: "web_search_20250305",
     name: "web_search",
-    max_uses: 3,
+    max_uses: 5,
   };
 
   const marketLocations: Record<string, { country: string; city?: string; region?: string; timezone: string }> = {
@@ -64,14 +64,20 @@ function getWebSearchTool(market?: string) {
 /**
  * Competitor detection using Claude with web search tool.
  * Claude searches the web to find real competitors instead of guessing.
+ * Scraped content gives Claude context about what the company actually does.
  */
 async function askClaudeForCompetitors(
   userUrl: string,
   locale: string,
-  market?: string
+  market?: string,
+  scrapedContent?: { title: string; meta_description: string; content: string }
 ): Promise<WebSearchResult> {
   const anthropic = getAnthropicClient();
   const lang = locale === "fi" ? "Finnish" : "English";
+
+  const companyContext = scrapedContent
+    ? `\n\nHere is what their website says:\nTitle: ${scrapedContent.title}\nDescription: ${scrapedContent.meta_description}\nContent: ${scrapedContent.content.slice(0, 3000)}`
+    : "";
 
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
@@ -81,16 +87,19 @@ async function askClaudeForCompetitors(
       {
         role: "user",
         content: `Find the direct competitors for this company: ${userUrl}
-${market ? `Focus on the ${market} market.` : ""}
+${market ? `Focus on the ${market} market.` : ""}${companyContext}
 
 Instructions:
-1. First, search the web to understand what this company does
-2. Then search for their competitors (e.g. "[company name] competitors", "[company name] kilpailijat", "[industry] companies [market]")
+1. Read the company context above to understand what they do
+2. Search the web for their competitors using specific queries:
+   - "[company name] kilpailijat" or "[company name] competitors"
+   - "[company name] vs" or "[company name] alternatives"
+   - "[specific industry] companies [market]"
 3. Return 5 direct competitors with verified website URLs
 
 Rules:
 - Only return competitors you found in web search results
-- Competitors must be real companies offering similar services/products
+- Competitors must be real companies offering similar services/products to the SAME target audience
 ${market ? `- Focus on competitors in the ${market} market` : "- Prefer same country/market competitors"}
 - Include each competitor's actual website URL (not social media or directory pages)
 - Respond in ${lang}
@@ -271,16 +280,20 @@ export async function findCompetitors(
   console.log("[COMPETITOR_FINDER] Starting web search for:", userUrl, market ? `(market: ${market})` : "");
 
   try {
-    // Run Claude with web search and background scrape in parallel
+    // Scrape first to give Claude context about what the company does
     const { scrapePage } = await import("./scraper");
-    const [webResult] = await Promise.all([
-      askClaudeForCompetitors(userUrl, locale, market),
-      // Warm the scrape cache for later analyze step (fire-and-forget)
-      scrapePage(userUrl).catch((err) => {
-        console.log("[COMPETITOR_FINDER] Background scrape failed (non-blocking):", err.message);
-        return null;
-      }),
-    ]);
+    const scraped = await scrapePage(userUrl).catch((err) => {
+      console.log("[COMPETITOR_FINDER] Scrape failed (non-blocking):", err.message);
+      return null;
+    });
+
+    const scrapedContent = scraped ? {
+      title: scraped.title,
+      meta_description: scraped.meta_description,
+      content: scraped.content,
+    } : undefined;
+
+    const webResult = await askClaudeForCompetitors(userUrl, locale, market, scrapedContent);
 
     console.log("[COMPETITOR_FINDER] Web search result:", webResult.company_name, "|", webResult.industry);
 

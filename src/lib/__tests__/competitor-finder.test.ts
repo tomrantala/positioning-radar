@@ -142,7 +142,7 @@ describe("findCompetitors", () => {
 
       const call = mockCreate.mock.calls[0][0];
       const webSearchTool = call.tools.find((t: { name: string }) => t.name === "web_search");
-      expect(webSearchTool.max_uses).toBe(3);
+      expect(webSearchTool.max_uses).toBe(5);
     });
 
     it("returns detected industry and company name", async () => {
@@ -250,6 +250,27 @@ describe("findCompetitors", () => {
 
       const call = mockCreate.mock.calls[0][0];
       expect(call.messages[0].content).toContain("Finnish");
+    });
+
+    it("includes scraped website content in the prompt", async () => {
+      setupWebSearchMocks();
+
+      await findCompetitors("https://user.com");
+
+      const call = mockCreate.mock.calls[0][0];
+      const prompt = call.messages[0].content;
+      // Scraped content from mock: "We build websites with WordPress"
+      expect(prompt).toContain("We build websites with WordPress");
+    });
+
+    it("sets max_uses to 5 for thorough search", async () => {
+      setupWebSearchMocks();
+
+      await findCompetitors("https://user.com");
+
+      const call = mockCreate.mock.calls[0][0];
+      const webSearchTool = call.tools.find((t: { name: string }) => t.name === "web_search");
+      expect(webSearchTool.max_uses).toBe(5);
     });
   });
 
