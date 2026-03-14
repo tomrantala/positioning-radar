@@ -70,7 +70,7 @@ async function askClaudeForCompetitors(
   userUrl: string,
   locale: string,
   market?: string,
-  scrapedContent?: { title: string; meta_description: string; content: string }
+  scrapedContent?: { title: string; meta_description?: string; content: string }
 ): Promise<WebSearchResult> {
   const anthropic = getAnthropicClient();
   const lang = locale === "fi" ? "Finnish" : "English";
