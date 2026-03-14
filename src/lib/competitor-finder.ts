@@ -14,8 +14,7 @@ export interface CompetitorFinderResult {
   competitors: CompetitorSuggestion[];
 }
 
-interface ClaudeFirstResult {
-  confidence: "high" | "low";
+interface WebSearchResult {
   company_name: string;
   industry: string;
   country: string;
@@ -37,43 +36,67 @@ function parseJsonResponse(text: string): unknown {
   return JSON.parse(json);
 }
 
+function getWebSearchTool(market?: string) {
+  const tool: Record<string, unknown> = {
+    type: "web_search_20250305",
+    name: "web_search",
+    max_uses: 3,
+  };
+
+  const marketLocations: Record<string, { country: string; city?: string; region?: string; timezone: string }> = {
+    finland: { country: "FI", city: "Helsinki", timezone: "Europe/Helsinki" },
+    us: { country: "US", timezone: "America/New_York" },
+    europe: { country: "DE", timezone: "Europe/Berlin" },
+    nordics: { country: "FI", timezone: "Europe/Helsinki" },
+  };
+
+  const normalized = market?.toLowerCase();
+  if (normalized && marketLocations[normalized]) {
+    tool.user_location = {
+      type: "approximate",
+      ...marketLocations[normalized],
+    };
+  }
+
+  return tool;
+}
+
 /**
- * Claude-first competitor detection: ask Claude to identify company + competitors
- * based solely on the URL (no scraping needed).
+ * Competitor detection using Claude with web search tool.
+ * Claude searches the web to find real competitors instead of guessing.
  */
 async function askClaudeForCompetitors(
   userUrl: string,
   locale: string,
   market?: string
-): Promise<ClaudeFirstResult> {
+): Promise<WebSearchResult> {
   const anthropic = getAnthropicClient();
   const lang = locale === "fi" ? "Finnish" : "English";
 
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
-    max_tokens: 2048,
+    max_tokens: 4096,
+    tools: [getWebSearchTool(market)] as never[],
     messages: [
       {
         role: "user",
-        content: `Analyze this company based on its URL: ${userUrl}
+        content: `Find the direct competitors for this company: ${userUrl}
 ${market ? `Focus on the ${market} market.` : ""}
 
-Return:
-1. Company name
-2. Industry/vertical (be specific, e.g. "WordPress hosting" not just "technology")
-3. Country/market
-4. 5 direct competitors with their website URLs
+Instructions:
+1. First, search the web to understand what this company does
+2. Then search for their competitors (e.g. "[company name] competitors", "[company name] kilpailijat", "[industry] companies [market]")
+3. Return 5 direct competitors with verified website URLs
 
 Rules:
-- Competitors must be real companies with real, working URLs
+- Only return competitors you found in web search results
+- Competitors must be real companies offering similar services/products
 ${market ? `- Focus on competitors in the ${market} market` : "- Prefer same country/market competitors"}
-- Only include companies you are confident about
-- If you don't recognize this company from the URL, set "confidence": "low"
+- Include each competitor's actual website URL (not social media or directory pages)
 - Respond in ${lang}
 
-Respond in JSON only:
+After searching, respond with JSON only:
 {
-  "confidence": "high" | "low",
   "company_name": "string",
   "industry": "string — the actual industry they operate in",
   "country": "string — the country/market",
@@ -90,7 +113,7 @@ Respond in JSON only:
     throw new Error("Failed to identify company");
   }
 
-  return parseJsonResponse(textBlock.text) as ClaudeFirstResult;
+  return parseJsonResponse(textBlock.text) as WebSearchResult;
 }
 
 /**
@@ -245,36 +268,35 @@ export async function findCompetitors(
     return cached;
   }
 
-  console.log("[COMPETITOR_FINDER] Starting Claude-first for:", userUrl, market ? `(market: ${market})` : "");
+  console.log("[COMPETITOR_FINDER] Starting web search for:", userUrl, market ? `(market: ${market})` : "");
 
-  // Run Claude-first and background scrape in parallel
-  const { scrapePage } = await import("./scraper");
-  const [claudeResult] = await Promise.all([
-    askClaudeForCompetitors(userUrl, locale, market),
-    // Warm the scrape cache for later analyze step (fire-and-forget)
-    scrapePage(userUrl).catch((err) => {
-      console.log("[COMPETITOR_FINDER] Background scrape failed (non-blocking):", err.message);
-      return null;
-    }),
-  ]);
+  try {
+    // Run Claude with web search and background scrape in parallel
+    const { scrapePage } = await import("./scraper");
+    const [webResult] = await Promise.all([
+      askClaudeForCompetitors(userUrl, locale, market),
+      // Warm the scrape cache for later analyze step (fire-and-forget)
+      scrapePage(userUrl).catch((err) => {
+        console.log("[COMPETITOR_FINDER] Background scrape failed (non-blocking):", err.message);
+        return null;
+      }),
+    ]);
 
-  // If Claude is confident, use the fast path
-  if (claudeResult.confidence === "high") {
-    console.log("[COMPETITOR_FINDER] Claude-first HIGH confidence:", claudeResult.company_name, "|", claudeResult.industry);
+    console.log("[COMPETITOR_FINDER] Web search result:", webResult.company_name, "|", webResult.industry);
 
     const result: CompetitorFinderResult = {
-      detected_industry: claudeResult.industry,
-      company_name: claudeResult.company_name,
-      competitors: claudeResult.competitors.slice(0, 5),
+      detected_industry: webResult.industry,
+      company_name: webResult.company_name,
+      competitors: webResult.competitors.slice(0, 5),
     };
 
     competitorCache.set(cacheKey, result);
     return result;
+  } catch (err) {
+    // Web search failed: fall back to scrape + Tavily flow
+    console.log("[COMPETITOR_FINDER] Web search failed, falling back to scrape+Tavily:", (err as Error).message);
+    const result = await findCompetitorsFallback(userUrl, locale, market);
+    competitorCache.set(cacheKey, result);
+    return result;
   }
-
-  // Low confidence: fall back to scrape + Tavily flow
-  console.log("[COMPETITOR_FINDER] Claude-first LOW confidence, falling back to scrape+Tavily");
-  const result = await findCompetitorsFallback(userUrl, locale, market);
-  competitorCache.set(cacheKey, result);
-  return result;
 }

@@ -1,5 +1,6 @@
 import { ScrapedPage } from "./types";
 import { scrapeCache } from "./cache";
+import { stripImages } from "./strip-images";
 
 const FIRECRAWL_API_URL = "https://api.firecrawl.dev/v1/scrape";
 
@@ -48,7 +49,7 @@ export async function scrapePage(url: string): Promise<ScrapedPage> {
   const page: ScrapedPage = {
     url: normalizedUrl,
     title: result?.metadata?.title || "",
-    content: result?.markdown || "",
+    content: stripImages(result?.markdown || ""),
     meta_description: result?.metadata?.description || "",
   };
 
